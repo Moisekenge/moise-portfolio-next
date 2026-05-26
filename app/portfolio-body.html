@@ -1,0 +1,890 @@
+
+  <!-- boot overlay -->
+  <div id="boot" aria-hidden="true">
+    <div class="lines">
+      <div class="line"><span class="prompt">&gt;</span> initializing portfolio.sys <span class="ok">[ok]</span></div>
+      <div class="line"><span class="prompt">&gt;</span> mounting /home/moise <span class="ok">[ok]</span></div>
+      <div class="line"><span class="prompt">&gt;</span> loading modules: [hero, about, experience, projects, skills, contact]</div>
+      <div class="line"><span class="prompt">&gt;</span> establishing connection... <span class="ok">[ok]</span></div>
+      <div class="line"><span class="prompt">&gt;</span> authentication: guest_session_granted</div>
+      <div class="line"><span class="prompt">&gt;</span> rendering interface <span class="ok">[ok]</span></div>
+      <div class="line">&nbsp;</div>
+      <div class="line">welcome, visitor.</div>
+    </div>
+    <div class="hint">click or scroll to skip</div>
+  </div>
+
+  <!-- background overlays -->
+  <div class="dotgrid" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <canvas id="matrixRain" aria-hidden="true"></canvas>
+
+  <!-- topbar -->
+  <header class="topbar">
+    <div class="mx-auto max-w-[1100px] px-[clamp(20px,4vw,56px)] py-2.5 flex items-center justify-between gap-4 flex-wrap">
+      <div class="flex items-center gap-3 flex-wrap">
+        <span><span class="dot"></span></span>
+        <span class="text-[var(--fg)]">~/moise.kenge</span>
+        <span class="text-[var(--fg-3)] hidden sm:inline">/</span>
+        <span class="hidden sm:inline">portfolio.sh</span>
+        <span class="text-[var(--fg-3)] hidden md:inline">/</span>
+        <span class="hidden md:inline">v2026.05</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <nav class="nav flex gap-4">
+          <a href="#about">about</a>
+          <a href="#experience">experience</a>
+          <a href="#projects">projects</a>
+          <a href="#skills">skills</a>
+          <a href="#contact">contact</a>
+        </nav>
+        <span class="text-[var(--fg-3)]">|</span>
+        <span id="clock" class="text-[var(--fg)] tabular-nums">--:--:--</span>
+        <span id="uptime" class="text-[var(--fg-2)] tabular-nums hidden sm:inline">↑ 00:00:00</span>
+
+        <div class="theme-toggle ml-1" role="tablist" aria-label="theme">
+          <button type="button" data-theme="dark" aria-label="dark mode" title="dark mode"><i class="ti ti-moon"></i></button>
+          <button type="button" data-theme="light" aria-label="light mode" title="light mode"><i class="ti ti-sun"></i></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 mx-auto max-w-[1100px] px-[clamp(20px,4vw,56px)]">
+
+    <!-- HERO ─────────────────────────────────────────────────────────── -->
+    <section id="hero" class="min-h-[100vh] flex flex-col justify-center pt-20 pb-12 relative" data-screen-label="01 hero">
+      <div class="text-[11px] font-mono text-[var(--fg-2)] tracking-wider mb-7 flex items-center gap-3 flex-wrap">
+        <span class="text-[var(--accent)]">[</span>
+        <span>~/whoami</span>
+        <span class="text-[var(--accent)]">]</span>
+        <span class="text-[var(--fg-3)]">·</span>
+        <span>Ottawa, ON · Canada</span>
+        <span class="text-[var(--fg-3)]">·</span>
+        <span style="color:var(--green); display:inline-flex; align-items:center; gap:6px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;"></span>
+          Open for Summer 2027 · AI / Software Engineering roles
+        </span>
+      </div>
+
+      <h1 class="hero-name" data-decrypt>Moïse Kenge</h1>
+
+      <div class="hero-grid mt-7">
+
+        <!-- LEFT: role + positioning + ctas -->
+        <div class="min-w-0">
+          <div class="font-mono text-[15px] sm:text-[17px] text-[var(--fg)] flex items-center flex-wrap gap-x-3 gap-y-2">
+            <span class="text-[var(--accent)]">$</span>
+            <span class="text-[var(--fg-2)]">specialty &gt;</span>
+            <span id="typedRole" class="text-[var(--fg)]"></span>
+            <span class="cursor-blink"></span>
+          </div>
+
+          <p class="mt-5 max-w-[620px] text-[17px] sm:text-[20px] text-[var(--fg-2)] font-light leading-[1.5]">
+            I build <span class="text-[var(--fg)]">production AI systems</span> — currently shipping LLM-powered internal tools at <span class="text-[var(--fg)]">Jonas Software (Constellation)</span>. <span class="text-[var(--fg)]">Security DNA</span> from a year of web3 audits; <span class="text-[var(--fg)]">founding chops</span> from co-building two startups end-to-end.
+          </p>
+
+          <p class="mt-4 max-w-[620px] font-mono text-[13px] text-[var(--fg-2)] leading-[1.6]">
+            <span style="color:var(--green)">●</span> <span style="color:var(--fg)">Seeking:</span> Summer 2027 internships — <span class="text-[var(--accent)]">AI Engineering</span> or <span class="text-[var(--accent)]">Software Engineering</span> roles. Ship clean, ship calm, ship often.
+          </p>
+
+          <div class="mt-10 flex flex-wrap gap-3">
+            <a href="#projects" class="cta primary">
+              <i class="ti ti-terminal-2"></i>
+              <span>./view_projects</span>
+            </a>
+            <button class="cta" onclick="document.getElementById('palette-opener').click()">
+              <i class="ti ti-keyboard"></i>
+              <span>open terminal</span>
+              <span class="ml-1 text-[var(--fg-3)] text-[10px]">⌘K</span>
+            </button>
+            <a href="#contact" class="cta">
+              <i class="ti ti-mail"></i>
+              <span>./contact</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- RIGHT: whoami panel + status widget -->
+        <aside class="flex flex-col gap-4 min-w-0">
+
+          <div class="agent" id="agent">
+            <div class="head">
+              <div class="left">
+                <span class="pmt">$</span>
+                <span>ask moïse</span>
+                <span style="color:var(--fg-3)">·</span>
+                <span style="color:var(--fg-3)">ai agent</span>
+              </div>
+              <div class="right">
+                <span class="live"><span class="d"></span>live</span>
+              </div>
+            </div>
+            <div class="log" id="agentLog">
+              <div class="turn">
+                <div class="q">hi, who are you?</div>
+                <div class="a"><span class="who">moïse:</span> software engineer at uottawa, currently shipping internal <span class="tech">ai tooling</span> at jonas software (constellation). co-founder of mobisoins and klg. focused on <span class="tech">ai infra</span>, <span class="tech">security</span>, and production systems that don't fall over. ask me anything — projects, stack, principles, hiring.</div>
+              </div>
+            </div>
+            <div class="suggestions" id="agentChips">
+              <button class="chip" data-q="what's otonmi?">what's otonmi?</button>
+              <button class="chip" data-q="what's your favorite stack?">what's your stack?</button>
+              <button class="chip" data-q="biggest engineering win?">biggest win?</button>
+              <button class="chip" data-q="are you open to roles?">are you hiring-able?</button>
+            </div>
+            <form class="input-row" id="agentForm" autocomplete="off">
+              <span class="pmt">$</span>
+              <input id="agentInput" type="text" placeholder="ask anything..." maxlength="220" spellcheck="false" />
+              <button type="submit" class="send" id="agentSend">[ ↵ ]</button>
+            </form>
+          </div>
+
+          <div class="status-widget">
+            <span class="k">role</span>       <span class="v">AI Engineer</span>
+            <span class="k">seeking</span>    <span class="v"><span class="gd">●</span> Summer 2027 · AI / SWE roles</span>
+            <span class="k">currently</span>  <span class="v">@ Jonas Software · Constellation</span>
+            <span class="k">location</span>   <span class="v">Ottawa, ON · CA</span>
+            <span class="k">last_deploy</span><span class="v" id="lastDeploy">3h 17m ago</span>
+          </div>
+
+        </aside>
+
+      </div>
+
+      <!-- STATS STRIP -->
+      <div class="stats-strip mt-12">
+        <div class="stat">
+          <div class="n">04<span class="unit">/04</span></div>
+          <div class="l">shipped projects</div>
+          <div class="ctx">2 active · 2 in production</div>
+        </div>
+        <div class="stat">
+          <div class="n">100<span class="unit">+</span></div>
+          <div class="l">web3 audits</div>
+          <div class="ctx">20+ risk indicators surfaced</div>
+        </div>
+        <div class="stat">
+          <div class="n">05<span class="unit">-eng</span></div>
+          <div class="l">team led</div>
+          <div class="ctx">co-founder · technical lead</div>
+        </div>
+        <div class="stat">
+          <div class="n" id="internshipCount">02</div>
+          <div class="l">internships</div>
+          <div class="ctx">Jonas (current) · Webacy</div>
+        </div>
+      </div>
+
+      <!-- TICKER TAPE -->
+      <div class="ticker" aria-hidden="true">
+        <div class="ticker-rail" id="ticker-rail">
+          <!-- group 1 -->
+          <span class="item"><span class="d">◆</span><span class="k">status</span><span class="ok">open · Summer 2027</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">seeking</span><span class="v">AI / Software Engineering roles</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">currently</span><span class="v">@ Jonas · Constellation</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">deployed</span><span class="v">otonmi.v0.4.2</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">uptime</span><span class="v">99.94%</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">commits / week</span><span class="v">23</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">p95 latency</span><span class="v">182ms</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">web3 audits</span><span class="v">100+</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">team led</span><span class="v">5 engineers</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">law 25</span><span class="ok">compliant</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">ssl rating</span><span class="ok">A+</span></span>
+          <!-- group 2 (duplicate for seamless loop) -->
+          <span class="item"><span class="d">◆</span><span class="k">status</span><span class="ok">open · Summer 2027</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">seeking</span><span class="v">AI / Software Engineering roles</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">currently</span><span class="v">@ Jonas · Constellation</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">deployed</span><span class="v">otonmi.v0.4.2</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">uptime</span><span class="v">99.94%</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">commits / week</span><span class="v">23</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">p95 latency</span><span class="v">182ms</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">web3 audits</span><span class="v">100+</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">team led</span><span class="v">5 engineers</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">law 25</span><span class="ok">compliant</span></span>
+          <span class="item"><span class="d">◆</span><span class="k">ssl rating</span><span class="ok">A+</span></span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ABOUT ────────────────────────────────────────────────────────── -->
+    <section id="about" data-screen-label="02 about">
+      <div class="section-comment">// 02_about &nbsp;·&nbsp; <span class="ts">last_modified: 2026-05-23T14:32Z</span></div>
+      <h2 class="section-title" data-decrypt>about</h2>
+      <div class="section-rule"></div>
+
+      <div class="grid md:grid-cols-[1.4fr,1fr] gap-10 md:gap-14 items-start">
+        <div class="text-[17px] text-[var(--fg)] font-light leading-[1.65] max-w-[58ch] space-y-4">
+          <p>i'm a software engineer studying at the university of ottawa. by day i ship internal <strong class="text-[var(--accent)] font-medium">ai tooling</strong> at jonas software (constellation). by night, i co-found and build — a healthcare marketplace, a fleet management platform, an ai-driven security scanner.</p>
+          <p>i'm fluent in the full stack but i care most about <strong class="text-[var(--accent)] font-medium">systems that work end-to-end</strong>: clean architecture, automated tests, calm deploys. less hype, more shipped.</p>
+          <p>previously i did security research on web3 protocols. that sharpened how i build — assume hostile, document everything, never trust client input.</p>
+        </div>
+        <div class="dotfile" aria-label="dotfile">
+          <div class="ph">
+            <span><span class="pmt">$</span>cat <span class="file">~/.config/me.toml</span></span>
+            <span class="meta">utf-8 · 18 lines</span>
+          </div>
+          <span class="sec">[identity]</span>
+          <span class="row"><span class="k">name</span><span class="eq">=</span><span class="str">"moïse kenge"</span></span>
+          <span class="row"><span class="k">location</span><span class="eq">=</span><span class="str">"ottawa, on · ca"</span></span>
+          <span class="row"><span class="k">languages</span><span class="eq">=</span><span class="punc">[</span><span class="str">"english"</span><span class="punc">,</span> <span class="str">"french"</span><span class="punc">]</span></span>
+          <span class="row"><span class="k">edu</span><span class="eq">=</span><span class="str">"uottawa b.a.sc se · '27"</span></span>
+
+          <span class="sec">[currently]</span>
+          <span class="row"><span class="k">shipping</span><span class="eq">=</span><span class="str">"ai tooling @ jonas software"</span></span>
+          <span class="row"><span class="k">building</span><span class="eq">=</span><span class="punc">[</span><span class="str">"otonmi"</span><span class="punc">,</span> <span class="str">"mobisoins"</span><span class="punc">]</span></span>
+          <span class="row"><span class="k">learning</span><span class="eq">=</span><span class="punc">[</span><span class="str">"rust"</span><span class="punc">,</span> <span class="str">"llm internals"</span><span class="punc">]</span></span>
+
+          <span class="sec">[off_hours]</span>
+          <span class="row"><span class="k">sports</span><span class="eq">=</span><span class="punc">[</span><span class="str">"lifting"</span><span class="punc">,</span> <span class="str">"basketball"</span><span class="punc">]</span></span>
+          <span class="row"><span class="k">reading</span><span class="eq">=</span><span class="punc">[</span><span class="str">"mangas"</span><span class="punc">,</span> <span class="str">"engineering blogs"</span><span class="punc">]</span></span>
+          <span class="row"><span class="k">currently</span><span class="eq">=</span><span class="str">"the pragmatic programmer"</span></span>
+
+          <span class="sec">[interests]</span>
+          <span class="row"><span class="k">fields</span><span class="eq">=</span><span class="punc">[</span><span class="str">"ai_infra"</span><span class="punc">,</span> <span class="str">"web_security"</span><span class="punc">,</span> <span class="str">"founding"</span><span class="punc">]</span></span>
+          <span class="row"><span class="k">stack</span><span class="eq">=</span><span class="punc">[</span><span class="str">"ts"</span><span class="punc">,</span> <span class="str">"py"</span><span class="punc">,</span> <span class="str">"aws"</span><span class="punc">,</span> <span class="str">"react"</span><span class="punc">]</span></span>
+        </div>
+      </div>
+
+      <!-- PRINCIPLES -->
+      <div class="principles">
+        <div class="head"><span class="pmt">$</span>cat <span class="file">~/principles.md</span></div>
+        <ol>
+          <li><span class="n">01</span><span class="t">ship clean, ship calm, ship often <em>— the cadence is the product</em></span></li>
+          <li><span class="n">02</span><span class="t">assume hostile input. read the source <em>— security comes from defaults, not patches</em></span></li>
+          <li><span class="n">03</span><span class="t">automate the boring; document the rest <em>— future-you is the user</em></span></li>
+          <li><span class="n">04</span><span class="t">measure before optimizing <em>— gut feelings are unreliable benchmarks</em></span></li>
+          <li><span class="n">05</span><span class="t">own the deploy; own the rollback <em>— if you can't undo it, don't ship it</em></span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE ───────────────────────────────────────────────────── -->
+    <section id="experience" data-screen-label="03 experience">
+      <div class="section-comment">// 03_experience &nbsp;·&nbsp; <span class="ts">4 records · sorted: desc</span></div>
+      <h2 class="section-title" data-decrypt>experience</h2>
+      <div class="section-rule"></div>
+
+      <div class="timeline">
+
+        <div class="job">
+          <div class="job-meta">
+            <span class="idx">[04/04]</span>
+            <span class="dates">may 2026 — present</span>
+            <span class="loc">markham, on</span>
+            <span class="badge current">[ CURRENT ]</span>
+          </div>
+          <div>
+            <h3>jonas software <span class="text-[var(--fg-3)] text-[14px] font-light font-mono">· constellation</span></h3>
+            <div class="role">ai engineer intern</div>
+            <ul>
+              <li>building internal <strong>ai-powered tooling</strong> using typescript, react, node.js, and python — integrating llm apis into enterprise workflows across constellation's 100+ subsidiary companies.</li>
+              <li>shipping <strong>ai proofs-of-concept</strong> end-to-end: architecture through cloud deployment with automated testing and ci/cd pipelines.</li>
+              <li>translating ambiguous business problems into shippable technical solutions on tight iteration cycles with product, design, and ops stakeholders.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-meta">
+            <span class="idx">[03/04]</span>
+            <span class="dates">oct 2024 — present</span>
+            <span class="loc">quebec, ca</span>
+            <span class="badge current">[ CURRENT ]</span>
+          </div>
+          <div>
+            <h3>mobisoins</h3>
+            <div class="role">CTO / AI Engineer</div>
+            <ul>
+              <li>leading full-stack development of a <strong>mobile-first healthcare marketplace</strong> connecting patients with certified nurses — owning the lifecycle from architecture through production deployment.</li>
+              <li>building cross-platform mobile apps using <strong>react native (expo)</strong> and typescript, backed by a nestjs api and postgresql — stripe connect for split payments, clerk for auth.</li>
+              <li>built ci/cd pipelines with github actions and <strong>law 25 / pipeda-compliant</strong> data handling; rigorous unit and integration tests support frequent, safe deploys.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-meta">
+            <span class="idx">[02/04]</span>
+            <span class="dates">jan 2025 — apr 2026</span>
+            <span class="loc">remote</span>
+            <span class="badge past">[ PAST ]</span>
+          </div>
+          <div>
+            <h3>kyeto logistics group <span class="text-[var(--fg-3)] text-[14px] font-light font-mono">· klg</span></h3>
+            <div class="role">technical co-founder</div>
+            <ul>
+              <li>architected a <strong>cloud-native gps fleet management platform</strong> on aws (ec2, elb, rds, s3, vpc, route53) — custom subnets, security groups, and iam roles for least-privilege access.</li>
+              <li>led a <strong>5-person engineering team</strong> using agile/scrum, ran code reviews via pull requests, enforced git/github branching strategies to ship features at high frequency.</li>
+              <li>built scalable restful apis and microservices in node.js and postgresql for <strong>real-time vehicle tracking and payment processing</strong>, backed by automated tests.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-meta">
+            <span class="idx">[01/04]</span>
+            <span class="dates">jun 2024 — aug 2024</span>
+            <span class="loc">remote</span>
+            <span class="badge past">[ PAST ]</span>
+          </div>
+          <div>
+            <h3>webacy</h3>
+            <div class="role">security research intern</div>
+            <ul>
+              <li>conducted security research on <strong>100+ web3 projects</strong>, identifying 20+ risk indicators including suspicious contract patterns and liquidity vulnerabilities relevant to financial product trust.</li>
+              <li>built risk assessment frameworks and authored technical reports that fed directly into <strong>platform trust scoring</strong> used by end clients.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROJECTS ─────────────────────────────────────────────────────── -->
+    <section id="projects" data-screen-label="04 projects">
+      <div class="section-comment">// 04_featured_projects &nbsp;·&nbsp; <span class="ts">click any card to expand · scan for metadata</span></div>
+      <h2 class="section-title" data-decrypt>featured projects</h2>
+      <div class="section-rule"></div>
+
+      <div class="flex flex-col gap-6">
+
+        <article class="project-card">
+          <div class="left">
+            <div class="sweep"></div>
+            <div class="label">
+              <span>project_01</span>
+              <span class="text-[var(--fg-3)]">·</span>
+              <span class="badge active">[ ACTIVE ]</span>
+              <span class="text-[var(--fg-3)]">·</span>
+              <span class="text-[var(--fg-2)]">otonmi.com</span>
+            </div>
+            <h3>otonmi</h3>
+            <div class="tagline">ai-powered cybersecurity platform · dec 2024 — present</div>
+            <div class="card-meta"><span class="k">commit</span> <span class="v">a4f2b9c</span> · <span class="k">lang</span> <span class="v">python</span> · <span class="k">status</span> <span class="ok">active</span></div>
+            <p>Cloud-native <span class="text-[var(--accent)]">GenAI security platform</span> that scans repos using the <span class="text-[var(--accent)]">Claude API</span> with a <span class="text-[var(--accent)]">RAG-powered chatbot</span> for OWASP Top 10 vulnerability analysis. Built on Flask + PostgreSQL with vector embeddings, deployed to AWS with JWT auth and rate limiting.</p>
+            <div class="stack">
+              <span class="t">python</span><span class="t">flask</span><span class="t">claude api</span>
+              <span class="t">rag</span><span class="t">embeddings</span>
+              <span class="t">postgresql</span><span class="t">docker</span><span class="t">ansible</span><span class="t">aws</span>
+            </div>
+            <div class="actions">
+              <a href="https://otonmi.com" target="_blank" rel="noreferrer" class="text-[var(--fg)] hover:text-[var(--accent)]">visit otonmi.com →</a>
+              <button class="view">view details</button>
+            </div>
+            <div class="expanded">
+              <div class="row"><span class="k">role</span><span class="v">solo · architecture + build + deploy</span></div>
+              <div class="row"><span class="k">infra</span><span class="v">aws ec2, s3, rds, route53, elb · vpc w/ custom subnets + security groups + iam</span></div>
+
+              <div class="dive-section">
+                <div class="dive-head">// architecture</div>
+                <p>Single-tenant <span class="tech">Flask</span> API fronting a job queue that scans repos asynchronously. The <span class="tech">RAG-powered chatbot</span> ingests scanned code into <span class="tech">vector embeddings</span>, then retrieves relevant chunks per query and feeds them to <span class="tech">Claude</span> for OWASP-grounded responses. <span class="tech">PostgreSQL</span> stores scan results, embeddings, JWT issuance, and rate-limit counters. Served by gunicorn on <span class="tech">AWS EC2</span>, fronted by an ELB with Route53 DNS and least-privilege IAM roles per service.</p>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// stack rationale</div>
+                <ul>
+                  <li><span class="tech">Python / Flask</span> — AI libs are Python-first; Flask's small surface kept the security audit minimal.</li>
+                  <li><span class="tech">Claude API</span> — better structured-code reasoning than alternatives; lower false-positive rate on security claims.</li>
+                  <li><span class="tech">RAG over vector embeddings</span> — instead of stuffing the full repo into context, the chatbot retrieves only relevant code chunks per question. Cheaper, more accurate.</li>
+                  <li><span class="tech">PostgreSQL + pgvector</span> — one database for transactional state AND vector search. Fewer moving parts than a dedicated vector DB.</li>
+                  <li><span class="tech">AWS EC2 over ECS</span> — cost-efficient at low scale; Ansible playbooks already covered config drift.</li>
+                  <li><span class="tech">JWT + rate limiting</span> — opted out of OAuth complexity for v1; revisiting in v0.5.</li>
+                </ul>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// tradeoffs</div>
+                <ul>
+                  <li>flask isn't async-native — streaming claude responses required custom workarounds. <span class="num">v0.5</span> migrates to fastapi for sse.</li>
+                  <li>ansible served well for <span class="num">1-3 instances</span>; past <span class="num">10+</span> i'd switch to terraform + k8s.</li>
+                  <li>jwt-only auth means manual revocation list maintenance — fine at this scale, painful past 10k users.</li>
+                </ul>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// impact</div>
+                <ul>
+                  <li><span class="num">p95 &lt; 200ms</span> on scan requests under realistic load.</li>
+                  <li><span class="num">zero-downtime</span> deploys via blue/green on ec2.</li>
+                  <li>maps <span class="num">100+ owasp top 10</span> patterns to severity ratings with claude-generated rationale.</li>
+                  <li>ansible-provisioned infra reproducible from scratch in <span class="num">&lt; 15 min</span>.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <a class="preview" href="https://otonmi.com" target="_blank" rel="noreferrer" aria-label="open otonmi.com">
+            <div class="chrome">
+              <div class="lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+              <div class="url"><span class="lock">●</span>https://otonmi.com</div>
+            </div>
+            <div class="frame">
+              <div class="skeleton">loading preview · click to visit</div>
+              <img class="shot" src="https://api.microlink.io/?url=https%3A%2F%2Fotonmi.com&screenshot=true&embed=screenshot.url&viewport.width=1280&viewport.height=800&waitFor=600" alt="otonmi.com preview" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add('loaded')" onerror="this.onerror=null;this.src='https://image.thum.io/get/width/1200/crop/750/https://otonmi.com';" />
+              <span class="live-badge"><span class="d"></span>live</span>
+            </div>
+          </a>
+        </article>
+
+        <article class="project-card">
+          <div class="left">
+            <div class="sweep"></div>
+            <div class="label">
+              <span>project_02</span>
+              <span class="text-[var(--fg-3)]">·</span>
+              <span class="badge shipped">[ SHIPPED ]</span>
+              <span class="text-[var(--fg-3)]">·</span>
+              <span class="text-[var(--fg-2)]">kengeconsulting.com</span>
+            </div>
+            <h3>kenge consulting</h3>
+            <div class="tagline">secure backend api &amp; site · jul 2024 — aug 2024</div>
+            <div class="card-meta"><span class="k">commit</span> <span class="v">1f0e8a3</span> · <span class="k">lang</span> <span class="v">node.js</span> · <span class="k">status</span> <span class="ok">shipped</span></div>
+            <p>secure backend api in express.js with rate limiting, input sanitization, and parameterized queries against sql injection. tuned for sub-200ms response times under realistic load.</p>
+            <div class="stack">
+              <span class="t">node.js</span><span class="t">express</span><span class="t">sqlite</span><span class="t">owasp</span>
+            </div>
+            <div class="actions">
+              <a href="https://kengeconsulting.com" target="_blank" rel="noreferrer" class="text-[var(--fg)] hover:text-[var(--accent)]">visit kengeconsulting.com →</a>
+              <button class="view">view details</button>
+            </div>
+            <div class="expanded">
+              <div class="row"><span class="k">role</span><span class="v">solo · contract build</span></div>
+
+              <div class="dive-section">
+                <div class="dive-head">// architecture</div>
+                <p>classic 3-tier: <span class="tech">express</span> api + <span class="tech">sqlite</span> + static site. minimal surface — every endpoint locked behind rate limits and parameterized queries. designed to pass an audit, not to scale to millions.</p>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// stack rationale</div>
+                <ul>
+                  <li><span class="tech">node.js / express</span> — fastest path to a small, auditable api surface.</li>
+                  <li><span class="tech">sqlite over postgres</span> — single-file db, zero ops, perfect for a low-traffic consulting site.</li>
+                  <li>no frontend framework — fewer dependencies = smaller attack surface, faster ttfb.</li>
+                  <li><span class="tech">parameterized queries only</span> — no orm, no string concatenation, no surprises.</li>
+                </ul>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// tradeoffs</div>
+                <ul>
+                  <li>sqlite caps near <span class="num">100k</span> concurrent reads — acceptable here, would migrate to postgres past that.</li>
+                  <li>no orm meant more hand-written sql but tighter control over query plans and exposure.</li>
+                  <li>vanilla js frontend means no spa-style navigation — fine for a 5-page site, painful at 50.</li>
+                </ul>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// impact</div>
+                <ul>
+                  <li><span class="num">sub-200ms</span> p95 response time under realistic load.</li>
+                  <li>zero sql injection vectors — verified by manual review + automated owasp scan.</li>
+                  <li>shipped solo in <span class="num">4 weeks</span> with full ci/cd.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <a class="preview" href="https://kengeconsulting.com" target="_blank" rel="noreferrer" aria-label="open kengeconsulting.com">
+            <div class="chrome">
+              <div class="lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+              <div class="url"><span class="lock">●</span>https://kengeconsulting.com</div>
+            </div>
+            <div class="frame">
+              <div class="skeleton">loading preview · click to visit</div>
+              <img class="shot" src="https://api.microlink.io/?url=https%3A%2F%2Fkengeconsulting.com&screenshot=true&embed=screenshot.url&viewport.width=1280&viewport.height=800&waitFor=600" alt="kengeconsulting.com preview" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add('loaded')" onerror="this.onerror=null;this.src='https://image.thum.io/get/width/1200/crop/750/https://kengeconsulting.com';" />
+              <span class="live-badge"><span class="d"></span>live</span>
+            </div>
+          </a>
+
+        </article>
+
+        <!-- placeholder for future projects -->
+        <article class="project-card">
+          <div class="left">
+            <div class="sweep"></div>
+            <div class="label">
+              <span>project_03</span>
+              <span class="text-[var(--fg-3)]">·</span>
+              <span class="badge active">[ ACTIVE ]</span>
+              <span class="text-[var(--fg-3)]">·</span>
+              <span class="text-[var(--fg-2)]">mobisoins.com</span>
+            </div>
+            <h3>mobisoins</h3>
+            <div class="tagline">on-demand healthcare marketplace · Oct 2024 — present</div>
+            <div class="card-meta"><span class="k">commit</span> <span class="v">d8e1c44</span> · <span class="k">lang</span> <span class="v">typescript</span> · <span class="k">status</span> <span class="ok">active</span></div>
+            <p>Mobile-first marketplace connecting patients with OIIQ-licensed nurses for at-home care. Dual-app product (patient + nurse), real-time dispatch, split payments via Stripe Connect, Law 25 / PIPEDA-compliant data handling.</p>
+            <div class="stack">
+              <span class="t">react native</span><span class="t">expo</span><span class="t">typescript</span>
+              <span class="t">nestjs</span><span class="t">postgresql</span>
+              <span class="t">stripe connect</span><span class="t">clerk</span><span class="t">github actions</span>
+            </div>
+            <div class="actions">
+              <a href="https://mobisoins.com" target="_blank" rel="noreferrer" class="text-[var(--fg)] hover:text-[var(--accent)]">visit mobisoins.com →</a>
+              <button class="view">view details</button>
+            </div>
+            <div class="expanded">
+              <div class="row"><span class="k">role</span><span class="v">CTO / AI Engineer · full lifecycle</span></div>
+
+              <div class="dive-section">
+                <div class="dive-head">// architecture</div>
+                <p>Dual-client mobile architecture (patient + nurse apps) on a shared <span class="tech">NestJS</span> backend. Real-time dispatch via websockets. <span class="tech">Stripe Connect</span> handles split payments, platform fees, and tax remittance. <span class="tech">Clerk</span> provides auth across both apps. <span class="tech">PostgreSQL</span> stores profiles, service requests, transactions, and audit trails for compliance.</p>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// stack rationale</div>
+                <ul>
+                  <li><span class="tech">React Native + Expo</span> — one codebase, two apps, fast OTA updates across both clients.</li>
+                  <li><span class="tech">NestJS</span> — module + DI patterns kept the medium-large API codebase organized from day one.</li>
+                  <li><span class="tech">PostgreSQL</span> — relational integrity for transactional payments; row-level controls for PHI.</li>
+                  <li><span class="tech">Stripe Connect</span> — split payments, KYC, and tax handling out of the box. Days vs weeks of custom work.</li>
+                  <li><span class="tech">Clerk</span> — pre-built phone/email auth flows saved roughly a month of dev time.</li>
+                </ul>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// tradeoffs</div>
+                <ul>
+                  <li>React Native means occasional custom native modules (e.g., background location for the nurse app).</li>
+                  <li>Stripe Connect platform fees eat margin — accepted for speed-to-market; revisit at scale.</li>
+                  <li>Law 25 compliance added <span class="num">~2 weeks</span> for PHI encryption, audit trails, and consent flows — mandatory, not optional.</li>
+                </ul>
+              </div>
+
+              <div class="dive-section">
+                <div class="dive-head">// impact</div>
+                <ul>
+                  <li>Patient + nurse apps shipped to private beta.</li>
+                  <li><span class="num">Law 25 / PIPEDA</span> compliant from day one.</li>
+                  <li>Stripe Connect split-payments + tax handling live.</li>
+                  <li><span class="num">CI/CD</span> on every push via GitHub Actions; rigorous unit + integration coverage.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <a class="preview" href="https://mobisoins.com" target="_blank" rel="noreferrer" aria-label="open mobisoins.com">
+            <div class="chrome">
+              <div class="lights"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+              <div class="url"><span class="lock">●</span>https://mobisoins.com</div>
+            </div>
+            <div class="frame">
+              <div class="skeleton">loading preview · click to visit</div>
+              <img class="shot" src="assets/previews/mobisoins.png" data-fallback="https://image.thum.io/get/width/1280/crop/800/wait/10/noanimate/png/https://mobisoins.com" alt="mobisoins.com preview" loading="lazy" onload="this.classList.add('loaded')" onerror="this.onerror=null; if(this.dataset.fallback){ this.src=this.dataset.fallback; this.dataset.fallback=''; }" />
+              <span class="live-badge"><span class="d"></span>live</span>
+            </div>
+          </a>
+        </article>
+
+      </div>
+
+      <!-- OTHER projects -->
+      <div class="mt-16">
+        <div class="section-comment">// also shipped · experiments</div>
+        <div class="mt-2">
+          <div class="other-row">
+            <div class="line">
+              <span class="arrow">→</span>
+              <span class="name">webacy_audit</span>
+              <span class="sep">::</span>
+              <span class="desc">100+ web3 protocols audited for risk indicators</span>
+            </div>
+            <span class="badge research">[ RESEARCH ]</span>
+          </div>
+          <div class="other-row">
+            <div class="line">
+              <span class="arrow">→</span>
+              <span class="name">trust_scoring_framework</span>
+              <span class="sep">::</span>
+              <span class="desc">risk assessment models feeding into client trust scores</span>
+            </div>
+            <span class="badge research">[ RESEARCH ]</span>
+          </div>
+          <div class="other-row">
+            <div class="line">
+              <span class="arrow">→</span>
+              <span class="name">repo_scanner_cli</span>
+              <span class="sep">::</span>
+              <span class="desc">claude-powered owasp checker (otonmi component)</span>
+            </div>
+            <span class="badge active">[ ACTIVE ]</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="activity">
+        <div class="head">
+          <div class="left">
+            <span class="pmt">$</span>
+            <span>git log --all --oneline -8 <span style="color:var(--fg-3)">// ~/repos/*</span></span>
+          </div>
+          <div class="right">
+            <span>tracking · 4 repos</span>
+            <span class="live"><span class="d"></span>live</span>
+          </div>
+        </div>
+        <div class="body">
+          <div class="commit">
+            <span class="hash">a4f2b9c</span>
+            <span class="when">3h ago</span>
+            <span class="repo">otonmi</span>
+            <span class="msg"><span class="scope">feat(api):</span> stream llm summary chunks via sse</span>
+            <span class="delta"><span class="plus">+184</span> <span class="minus">-22</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">d8e1c44</span>
+            <span class="when">yesterday</span>
+            <span class="repo">mobisoins</span>
+            <span class="msg"><span class="scope">fix(payments):</span> idempotency on stripe webhook retries</span>
+            <span class="delta"><span class="plus">+47</span> <span class="minus">-15</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">7b2a01e</span>
+            <span class="when">2d ago</span>
+            <span class="repo">klg</span>
+            <span class="msg"><span class="scope">docs(infra):</span> postmortem for v2.1 cutover · runbooks updated</span>
+            <span class="delta"><span class="plus">+312</span> <span class="minus">-8</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">1f0e8a3</span>
+            <span class="when">4d ago</span>
+            <span class="repo">otonmi</span>
+            <span class="msg"><span class="scope">refactor:</span> extract jwt middleware into shared lib</span>
+            <span class="delta"><span class="plus">+98</span> <span class="minus">-126</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">ce71b22</span>
+            <span class="when">6d ago</span>
+            <span class="repo">portfolio</span>
+            <span class="msg"><span class="scope">feat(ui):</span> command palette + boot sequence + decryption reveal</span>
+            <span class="delta"><span class="plus">+612</span> <span class="minus">-44</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">9a3d014</span>
+            <span class="when">1w ago</span>
+            <span class="repo">mobisoins</span>
+            <span class="msg"><span class="scope">test:</span> add coverage for rate limiter · 92% line coverage</span>
+            <span class="delta"><span class="plus">+204</span> <span class="minus">-3</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">b4e2911</span>
+            <span class="when">1w ago</span>
+            <span class="repo">otonmi</span>
+            <span class="msg"><span class="scope">chore(deps):</span> bump @anthropic-ai/sdk to latest</span>
+            <span class="delta"><span class="plus">+12</span> <span class="minus">-12</span></span>
+          </div>
+          <div class="commit">
+            <span class="hash">e0c89a1</span>
+            <span class="when">2w ago</span>
+            <span class="repo">klg</span>
+            <span class="msg"><span class="scope">feat(track):</span> sub-second gps polling on premium tier</span>
+            <span class="delta"><span class="plus">+267</span> <span class="minus">-41</span></span>
+          </div>
+        </div>
+        <div class="foot">
+          <span>showing 8 of 142 · selected highlights across active repos</span>
+          <span>moise@portfolio:~$<span class="blink"></span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS ───────────────────────────────────────────────────────── -->
+    <section id="skills" data-screen-label="05 skills">
+      <div class="section-comment">// 05_stack &nbsp;·&nbsp; <span class="ts">resource_monitor :: htop -d 5</span></div>
+      <h2 class="section-title" data-decrypt>skills &amp; tech stack</h2>
+      <div class="section-rule"></div>
+
+      <div class="skills-block" data-bars>
+
+        <div class="skill-group">
+          <div class="cat"><span>// languages</span><span class="n">06</span></div>
+          <div class="bar-row"><span class="name">typescript</span><span class="bar"><span class="fill" data-pct="92"></span></span><span class="pct">92%</span></div>
+          <div class="bar-row"><span class="name">javascript</span><span class="bar"><span class="fill" data-pct="90"></span></span><span class="pct">90%</span></div>
+          <div class="bar-row"><span class="name">python</span><span class="bar"><span class="fill" data-pct="84"></span></span><span class="pct">84%</span></div>
+          <div class="bar-row"><span class="name">sql</span><span class="bar"><span class="fill" data-pct="78"></span></span><span class="pct">78%</span></div>
+          <div class="bar-row"><span class="name">java / kotlin</span><span class="bar"><span class="fill" data-pct="62"></span></span><span class="pct">62%</span></div>
+          <div class="bar-row"><span class="name">c / c++</span><span class="bar"><span class="fill" data-pct="48"></span></span><span class="pct">48%</span></div>
+        </div>
+
+        <div class="skill-group">
+          <div class="cat"><span>// frameworks</span><span class="n">07</span></div>
+          <div class="bar-row"><span class="name">react</span><span class="bar"><span class="fill" data-pct="90"></span></span><span class="pct">90%</span></div>
+          <div class="bar-row"><span class="name">node.js / express</span><span class="bar"><span class="fill" data-pct="88"></span></span><span class="pct">88%</span></div>
+          <div class="bar-row"><span class="name">next.js</span><span class="bar"><span class="fill" data-pct="80"></span></span><span class="pct">80%</span></div>
+          <div class="bar-row"><span class="name">react native</span><span class="bar"><span class="fill" data-pct="78"></span></span><span class="pct">78%</span></div>
+          <div class="bar-row"><span class="name">nestjs</span><span class="bar"><span class="fill" data-pct="72"></span></span><span class="pct">72%</span></div>
+          <div class="bar-row"><span class="name">flask / rails</span><span class="bar"><span class="fill" data-pct="60"></span></span><span class="pct">60%</span></div>
+          <div class="bar-row"><span class="name">graphql / grpc</span><span class="bar"><span class="fill" data-pct="50"></span></span><span class="pct">50%</span></div>
+        </div>
+
+        <div class="skill-group">
+          <div class="cat"><span>// ai / genai</span><span class="n">07</span></div>
+          <div class="bar-row"><span class="name">llm api integration</span><span class="bar"><span class="fill" data-pct="86"></span></span><span class="pct">86%</span></div>
+          <div class="bar-row"><span class="name">prompt engineering</span><span class="bar"><span class="fill" data-pct="82"></span></span><span class="pct">82%</span></div>
+          <div class="bar-row"><span class="name">rag pipelines</span><span class="bar"><span class="fill" data-pct="76"></span></span><span class="pct">76%</span></div>
+          <div class="bar-row"><span class="name">function calling / structured outputs</span><span class="bar"><span class="fill" data-pct="76"></span></span><span class="pct">76%</span></div>
+          <div class="bar-row"><span class="name">agentic workflows</span><span class="bar"><span class="fill" data-pct="70"></span></span><span class="pct">70%</span></div>
+          <div class="bar-row"><span class="name">vector embeddings / pgvector</span><span class="bar"><span class="fill" data-pct="68"></span></span><span class="pct">68%</span></div>
+          <div class="bar-row"><span class="name">llm evals</span><span class="bar"><span class="fill" data-pct="58"></span></span><span class="pct">58%</span></div>
+        </div>
+
+        <div class="skill-group">
+          <div class="cat"><span>// cloud / devops</span><span class="n">07</span></div>
+          <div class="bar-row"><span class="name">aws (ec2/rds/s3)</span><span class="bar"><span class="fill" data-pct="86"></span></span><span class="pct">86%</span></div>
+          <div class="bar-row"><span class="name">docker</span><span class="bar"><span class="fill" data-pct="80"></span></span><span class="pct">80%</span></div>
+          <div class="bar-row"><span class="name">github actions</span><span class="bar"><span class="fill" data-pct="82"></span></span><span class="pct">82%</span></div>
+          <div class="bar-row"><span class="name">linux</span><span class="bar"><span class="fill" data-pct="76"></span></span><span class="pct">76%</span></div>
+          <div class="bar-row"><span class="name">ansible</span><span class="bar"><span class="fill" data-pct="62"></span></span><span class="pct">62%</span></div>
+          <div class="bar-row"><span class="name">kubernetes / k8s</span><span class="bar"><span class="fill" data-pct="42"></span></span><span class="pct">42%</span></div>
+        </div>
+
+        <div class="skill-group">
+          <div class="cat"><span>// data / messaging</span><span class="n">06</span></div>
+          <div class="bar-row"><span class="name">postgresql</span><span class="bar"><span class="fill" data-pct="88"></span></span><span class="pct">88%</span></div>
+          <div class="bar-row"><span class="name">mysql / sqlite</span><span class="bar"><span class="fill" data-pct="72"></span></span><span class="pct">72%</span></div>
+          <div class="bar-row"><span class="name">dynamodb / aurora</span><span class="bar"><span class="fill" data-pct="60"></span></span><span class="pct">60%</span></div>
+          <div class="bar-row"><span class="name">redis (caching)</span><span class="bar"><span class="fill" data-pct="55"></span></span><span class="pct">55%</span></div>
+          <div class="bar-row"><span class="name">kafka</span><span class="bar"><span class="fill" data-pct="52"></span></span><span class="pct">52%</span></div>
+          <div class="bar-row"><span class="name">sqs / sns</span><span class="bar"><span class="fill" data-pct="58"></span></span><span class="pct">58%</span></div>
+        </div>
+
+        <div class="skill-group">
+          <div class="cat"><span>// security</span><span class="n">04</span></div>
+          <div class="bar-row"><span class="name">owasp top 10</span><span class="bar"><span class="fill" data-pct="84"></span></span><span class="pct">84%</span></div>
+          <div class="bar-row"><span class="name">jwt / oauth 2.0</span><span class="bar"><span class="fill" data-pct="82"></span></span><span class="pct">82%</span></div>
+          <div class="bar-row"><span class="name">secure api design</span><span class="bar"><span class="fill" data-pct="78"></span></span><span class="pct">78%</span></div>
+          <div class="bar-row"><span class="name">web3 audit</span><span class="bar"><span class="fill" data-pct="64"></span></span><span class="pct">64%</span></div>
+        </div>
+
+        <div class="skill-group">
+          <div class="cat"><span>// practices</span><span class="n">05</span></div>
+          <div class="bar-row"><span class="name">restful apis</span><span class="bar"><span class="fill" data-pct="90"></span></span><span class="pct">90%</span></div>
+          <div class="bar-row"><span class="name">microservices</span><span class="bar"><span class="fill" data-pct="78"></span></span><span class="pct">78%</span></div>
+          <div class="bar-row"><span class="name">automated testing</span><span class="bar"><span class="fill" data-pct="80"></span></span><span class="pct">80%</span></div>
+          <div class="bar-row"><span class="name">code review</span><span class="bar"><span class="fill" data-pct="85"></span></span><span class="pct">85%</span></div>
+          <div class="bar-row"><span class="name">agile / scrum</span><span class="bar"><span class="fill" data-pct="80"></span></span><span class="pct">80%</span></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- EDUCATION ────────────────────────────────────────────────────── -->
+    <section id="education" data-screen-label="06 education">
+      <div class="section-comment">// 06_education &nbsp;·&nbsp; <span class="ts">certifications: 0 (ship logs &gt; certs)</span></div>
+      <h2 class="section-title" data-decrypt>education</h2>
+      <div class="section-rule"></div>
+
+      <div class="edu-card">
+        <div>
+          <h3>university of ottawa</h3>
+          <div class="deg">b.a.sc., software engineering · co-op</div>
+          <div class="courses">
+            <span class="k">relevant_coursework =</span> [<br />
+            &nbsp;&nbsp;data structures &amp; algorithms,<br />
+            &nbsp;&nbsp;software construction,<br />
+            &nbsp;&nbsp;database management systems,<br />
+            &nbsp;&nbsp;object-oriented programming<br />
+            ]
+          </div>
+        </div>
+        <div class="date">
+          expected may 2027
+          <small>ottawa, on</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT ──────────────────────────────────────────────────────── -->
+    <section id="contact" data-screen-label="07 contact">
+      <div class="section-comment">// 07_contact &nbsp;·&nbsp; <span class="ts">open channel · response &lt; 24h</span></div>
+      <h2 class="section-title" data-decrypt>contact</h2>
+      <div class="section-rule"></div>
+
+      <div class="grid md:grid-cols-[1.2fr,1fr] gap-10 md:gap-14 items-start">
+        <div>
+          <h2 class="contact-headline">
+            Engineer first.<br />
+            Ship second.<br />
+            <span class="ok">Deploy together.</span>
+          </h2>
+          <p class="font-mono text-[13px] text-[var(--fg-2)] leading-[1.7] max-w-[52ch]">
+            <span class="inline-block w-2 h-2 rounded-full mr-1.5 align-middle" style="background:var(--green)"></span>
+            currently open for <strong class="text-[var(--fg)] font-medium">Summer 2027</strong> internships — AI Engineering or Software Engineering roles. Also up for sharp contract work in between.<br />
+            Fastest path is email. I reply within a day.
+          </p>
+        </div>
+
+        <div>
+          <a class="connect-row" href="mailto:moisekenge03@gmail.com">
+            <span class="cmd">$ connect <span class="via">--via</span> <span class="channel">email</span></span>
+            <span class="val">moisekenge03@gmail.com</span>
+            <span class="arr">→</span>
+          </a>
+          <a class="connect-row" href="https://github.com/Moisekenge" target="_blank" rel="noreferrer">
+            <span class="cmd">$ connect <span class="via">--via</span> <span class="channel">github</span></span>
+            <span class="val">github.com/Moisekenge</span>
+            <span class="arr">→</span>
+          </a>
+          <a class="connect-row" href="https://linkedin.com/in/moise-kenge" target="_blank" rel="noreferrer">
+            <span class="cmd">$ connect <span class="via">--via</span> <span class="channel">linkedin</span></span>
+            <span class="val">linkedin.com/in/moise-kenge</span>
+            <span class="arr">→</span>
+          </a>
+          <a class="connect-row" href="tel:6134155325">
+            <span class="cmd">$ connect <span class="via">--via</span> <span class="channel">phone</span></span>
+            <span class="val">613-415-5325</span>
+            <span class="arr">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="flex gap-4 flex-wrap items-center">
+        <span>moise.kenge © <span id="yr"></span></span>
+        <span class="text-[var(--border-strong)]">|</span>
+        <span>handcrafted · no template</span>
+        <span class="text-[var(--border-strong)]">|</span>
+        <span>↑↑↓↓←→←→ b a</span>
+      </div>
+      <div class="ascii">⌁ end of file ⌁</div>
+    </footer>
+
+  </main>
+
+  <!-- palette opener -->
+  <button id="palette-opener" type="button" aria-label="open terminal (Cmd+K)">
+    <i class="ti ti-terminal-2"></i>
+    <span>terminal</span>
+    <kbd>⌘K</kbd>
+  </button>
+
+  <!-- command palette modal -->
+  <div id="palette-backdrop" role="dialog" aria-modal="true" aria-label="terminal">
+    <div id="palette">
+      <div class="pal-head">
+        <div class="left">
+          <span class="dot d-r"></span>
+          <span class="dot d-y"></span>
+          <span class="dot d-g"></span>
+        </div>
+        <span>moise@portfolio:~ — zsh — 80×24</span>
+        <span>?</span>
+      </div>
+      <div class="pal-body" id="pal-body">
+        <div class="log" id="pal-log">
+          <div class="out">welcome to portfolio.sh — type <span style="color:var(--green)">help</span> for commands. ctrl+k toggles.</div>
+        </div>
+      </div>
+      <div class="pal-input-row">
+        <span class="pmt">moise@portfolio:~$</span>
+        <input id="pal-input" class="pal-input" type="text" autocomplete="off" spellcheck="false" placeholder="type a command..." />
+      </div>
+      <div class="pal-foot">
+        <span><kbd>↵</kbd> run</span>
+        <span><kbd>tab</kbd> complete</span>
+        <span><kbd>↑↓</kbd> history</span>
+        <span><kbd>esc</kbd> close</span>
+        <span><kbd>?</kbd>: try <span style="color:var(--green)">help</span> · <span style="color:var(--green)">whoami</span> · <span style="color:var(--green)">ls projects</span> · <span style="color:var(--green)">sudo hire-me</span></span>
+      </div>
+    </div>
+  </div>
