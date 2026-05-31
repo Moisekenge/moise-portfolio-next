@@ -46,6 +46,12 @@
           <button type="button" data-theme="dark" aria-label="dark mode" title="dark mode"><i class="ti ti-moon"></i></button>
           <button type="button" data-theme="light" aria-label="light mode" title="light mode"><i class="ti ti-sun"></i></button>
         </div>
+
+        <div class="music-toggle ml-1" aria-label="background music">
+          <button id="musicBtn" type="button" data-on="0" aria-pressed="false" title="toggle music · m">
+            <i class="ti ti-music-off"></i>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -887,4 +893,7 @@
         <span><kbd>?</kbd>: try <span style="color:var(--green)">help</span> · <span style="color:var(--green)">whoami</span> · <span style="color:var(--green)">ls projects</span> · <span style="color:var(--green)">sudo hire-me</span></span>
       </div>
     </div>
+
+  <!-- background music · stealth breacher · controlled by #musicBtn + palette commands -->
+  <audio id="bgMusic" src="/audio/stealth-breacher.mp3" loop preload="auto"></audio>
   </div>

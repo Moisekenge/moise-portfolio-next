@@ -1713,6 +1713,41 @@ section:last-of-type { padding-bottom: 96px; }
   border: 1px solid var(--border);
 }
 
+/* ─── music toggle (matches theme-toggle aesthetic) ──────────────────── */
+.music-toggle {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  padding: 2px;
+  border-radius: 3px;
+}
+.music-toggle button {
+  width: 26px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  color: var(--fg-3);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background .15s, color .15s, box-shadow .15s;
+  font-size: 13px;
+}
+.music-toggle button:hover { color: var(--fg); }
+.music-toggle button[data-on="1"] {
+  background: var(--bg);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px var(--border), 0 0 12px -2px var(--accent);
+  animation: music-pulse 1.8s ease-in-out infinite;
+}
+@keyframes music-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px var(--border), 0 0 8px -2px var(--accent); }
+  50%      { box-shadow: 0 0 0 1px var(--border), 0 0 16px -1px var(--accent); }
+}
+
 /* ─── light theme tokens ──────────────────────────────────────────────── */
 
 :root[data-theme="light"] {

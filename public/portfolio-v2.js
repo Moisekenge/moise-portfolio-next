@@ -660,4 +660,70 @@ VISITOR QUESTION: `;
   /* ── topbar mobile nav placeholder ─────────────────────────────────── */
   // nothing fancy — links smooth-scroll via html { scroll-behavior: smooth; }
 
+  /* ── background music ──────────────────────────────────────────────── */
+  const MUSIC_KEY = "moise.music";
+  const musicBtn = $("#musicBtn");
+  const bgMusic = $("#bgMusic");
+  const musicIcon = musicBtn ? musicBtn.querySelector("i") : null;
+  const MUSIC_VOL = 0.35;
+
+  function setMusicUI(on) {
+    if (!musicBtn || !musicIcon) return;
+    musicBtn.dataset.on = on ? "1" : "0";
+    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    musicIcon.className = on ? "ti ti-music" : "ti ti-music-off";
+    musicBtn.title = on ? "music: on · m to toggle" : "music: off · m to toggle";
+  }
+
+  function setMusic(on) {
+    if (!bgMusic) return;
+    try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch (_) {}
+    if (on) {
+      bgMusic.volume = MUSIC_VOL;
+      const p = bgMusic.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => setMusicUI(true)).catch(() => setMusicUI(false));
+      } else {
+        setMusicUI(true);
+      }
+    } else {
+      bgMusic.pause();
+      setMusicUI(false);
+    }
+  }
+
+  function toggleMusic() {
+    if (!bgMusic) return;
+    setMusic(bgMusic.paused);
+  }
+
+  // restore previous state. autoplay will likely fail without a gesture;
+  // ui falls back to "off" so the next click reflects reality.
+  let storedMusic = "0";
+  try { storedMusic = localStorage.getItem(MUSIC_KEY) || "0"; } catch (_) {}
+  if (bgMusic && storedMusic === "1") {
+    setMusic(true);
+  } else {
+    setMusicUI(false);
+  }
+
+  if (musicBtn) musicBtn.addEventListener("click", toggleMusic);
+
+  // 'm' hotkey — skip when user is typing in a field
+  window.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const tag = (document.activeElement && document.activeElement.tagName) || "";
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.key.toLowerCase() === "m") {
+      e.preventDefault();
+      toggleMusic();
+    }
+  });
+
+  // command palette integration
+  COMMANDS["music on"]  = { desc: "play background music",  run: () => { setMusic(true);  print("music engaged · stealth breacher (loop · 35% vol)", "ok"); } };
+  COMMANDS["music off"] = { desc: "stop background music",  run: () => { setMusic(false); print("music halted.", "ok"); } };
+  COMMANDS["play"]      = { desc: "alias: music on",  run: () => COMMANDS["music on"].run()  };
+  COMMANDS["mute"]      = { desc: "alias: music off", run: () => COMMANDS["music off"].run() };
+
 })();
