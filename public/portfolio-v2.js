@@ -676,13 +676,14 @@ VISITOR QUESTION: `;
   }
 
   function setMusic(on) {
-    if (!bgMusic) return;
+    if (!bgMusic) { console.warn("[music] #bgMusic element not found"); return; }
     try { localStorage.setItem(MUSIC_KEY, on ? "1" : "0"); } catch (_) {}
     if (on) {
       bgMusic.volume = MUSIC_VOL;
       const p = bgMusic.play();
       if (p && typeof p.then === "function") {
-        p.then(() => setMusicUI(true)).catch(() => setMusicUI(false));
+        p.then(() => { console.log("[music] playing"); setMusicUI(true); })
+         .catch((err) => { console.warn("[music] play blocked:", err.name, err.message); setMusicUI(false); });
       } else {
         setMusicUI(true);
       }
@@ -707,7 +708,15 @@ VISITOR QUESTION: `;
     setMusicUI(false);
   }
 
-  if (musicBtn) musicBtn.addEventListener("click", toggleMusic);
+  if (musicBtn) {
+    console.log("[music] button wired, audio:", !!bgMusic);
+    musicBtn.addEventListener("click", (e) => { e.preventDefault(); toggleMusic(); });
+  } else {
+    console.warn("[music] #musicBtn not found at script init");
+  }
+  if (bgMusic) {
+    bgMusic.addEventListener("error", () => console.warn("[music] audio load error:", bgMusic.error));
+  }
 
   // 'm' hotkey — skip when user is typing in a field
   window.addEventListener("keydown", (e) => {
