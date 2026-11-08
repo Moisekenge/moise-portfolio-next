@@ -1,41 +1,64 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Director } from "@/components/site/director";
+import { Header } from "@/components/site/header";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Moïse Kenge · AI / Software Engineer",
-  description:
-    "Moïse Kenge — AI Engineer building production AI systems. Open to AI / Software Engineering roles for Summer 2027.",
+  description: "Software engineer building production AI systems. Incoming at AMD and Thales.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+// Runs before first paint, so animated layouts never flash their static version.
+const motionScript = `try{if(matchMedia("(prefers-reduced-motion: no-preference)").matches&&window.WebGLRenderingContext){var d=document.documentElement;d.classList.add("motion");if(!sessionStorage.getItem("seen"))d.classList.add("is-loading")}}catch(e){}`;
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.21.0/dist/tabler-icons.min.css"
-        />
+        <script dangerouslySetInnerHTML={{ __html: motionScript }} />
       </head>
-      <body>{children}</body>
+      <body>
+        <div className="loader" aria-hidden="true">
+          <svg className="loader-card" viewBox="0 0 100 100">
+            <rect x="1" y="1" width="98" height="98" rx="22" pathLength="1" />
+          </svg>
+        </div>
+        <div className="tone" aria-hidden="true">
+          <div className="glow" />
+        </div>
+        <canvas className="stage-canvas" aria-hidden="true" />
+        <div className="progress" aria-hidden="true" />
+        <div className="cursor" aria-hidden="true">
+          <span />
+        </div>
+        <Header />
+        <div className="autoplay" data-state="idle">
+          <button type="button" className="autoplay-button" aria-label="Play automatic scroll">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path className="autoplay-play" d="M4 2.3v11.4l9.4-5.7z" />
+              <path className="autoplay-pause" d="M3.5 2.5h3.2v11H3.5zM9.3 2.5h3.2v11H9.3z" />
+              <path className="autoplay-replay" d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5M4.4 1.8v2.9h2.9" />
+            </svg>
+            <span className="autoplay-label">Play</span>
+          </button>
+          <span className="autoplay-hint">or scroll</span>
+        </div>
+        {children}
+        <Director />
+      </body>
     </html>
   );
 }
