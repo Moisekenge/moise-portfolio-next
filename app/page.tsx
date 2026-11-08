@@ -6,7 +6,7 @@ const personJsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Person",
   name: profile.name,
-  jobTitle: "AI / Software Engineer",
+  jobTitle: "AI Engineer",
   sameAs: [profile.github, profile.linkedin],
 });
 

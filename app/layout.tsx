@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Moïse Kenge · AI / Software Engineer",
-  description: "Software engineer building production AI systems. Incoming at AMD and Thales.",
+  title: "Moïse Kenge · AI Engineer",
+  description: "AI Engineer building production AI systems. Incoming at AMD and Thales.",
 };
 
 // Runs before first paint, so animated layouts never flash their static version.
