@@ -44,6 +44,29 @@ export type AppStep = {
   nurse: string;
 };
 
+/** A line from a side node to a node of the map. Solid is a request, dotted is realtime. */
+export type MapLink = { to: string; kind?: "request" | "realtime"; label?: string };
+
+/** One box of an architecture map. `icon` names a brand mark or a generic icon. */
+export type MapNode = { name: string; note?: string; icon?: string; links?: MapLink[] };
+
+/** One layer of an architecture map: its own nodes, and outside services on its left and right. */
+export type Layer = {
+  nodes: MapNode[];
+  /** Label on the line to the layer above. */
+  up?: string;
+  left?: MapNode[];
+  right?: MapNode[];
+};
+
+/** The full view of a section, opened with its Details button. The text follows the LinkedIn profile. */
+export type Detail = {
+  about: string[];
+  stack: string[];
+  /** Layers from the bottom up: the first one is the base of the diagram. */
+  architecture: Layer[];
+};
+
 export type Job = {
   company: string;
   short: string;
@@ -64,8 +87,10 @@ export type Job = {
   url: string;
   domain: string;
   beats: Beat[];
-  /** App walkthrough, played right after the second beat. */
+  /** App walkthrough, played as its own chapter after the points. */
   app?: AppStep[];
+  /** A role that has not started yet has no stack or architecture, so those lists stay empty. */
+  detail: Detail;
 };
 
 // Each company takes one face of the card, in this order.
@@ -85,6 +110,11 @@ export const experience: Job[] = [
     url: "https://www.amd.com",
     domain: "amd.com",
     beats: [{ big: "AI agents for GPU validation.", small: "Joining the Instinct data center GPU team.", fx: "rays" }],
+    detail: {
+      about: ["Incoming for summer 2027.", "Joining the Instinct data center GPU team to build AI agents for GPU validation."],
+      stack: [],
+      architecture: [],
+    },
   },
   {
     company: "Thales",
@@ -102,6 +132,11 @@ export const experience: Job[] = [
     url: "https://www.thalesgroup.com",
     domain: "thalesgroup.com",
     beats: [{ big: "Defence & Security software.", small: "Joining Thales Canada as a software developer.", fx: "stretch" }],
+    detail: {
+      about: ["Incoming for winter 2027.", "Joining Thales Canada as a software developer, on Defence & Security software."],
+      stack: [],
+      architecture: [],
+    },
   },
   {
     company: "Jonas Software",
@@ -122,6 +157,29 @@ export const experience: Job[] = [
       { big: "RAG and structured outputs.", small: "Grounded pipelines for source code and document analysis.", fx: "words" },
       { big: "6x", small: "Faster inference, deployed on AWS and Azure.", fx: "tunnel", stat: true },
     ],
+    detail: {
+      about: [
+        "AI engineering at Jonas Software, a Constellation Software company.",
+        "Shipped production LLM tooling used across 100+ Constellation subsidiaries, including Strata, an M&A due-diligence platform. Built RAG and structured-output pipelines, deployed them on Azure, and cut inference latency 6x.",
+      ],
+      stack: ["Python", "TypeScript", "React", "Node.js", "RAG", "LLM APIs", "Azure", "CI/CD"],
+      architecture: [
+        { nodes: [{ name: "Azure", note: "Pipelines deployed here", icon: "cloud" }, { name: "LLM APIs", icon: "sparkles" }, { name: "CI/CD", icon: "workflow" }] },
+        {
+          nodes: [
+            { name: "RAG pipelines", note: "Grounded in source code and documents", icon: "search" },
+            { name: "Structured outputs", note: "Structured-output pipelines", icon: "braces" },
+          ],
+        },
+        {
+          nodes: [
+            { name: "LLM tooling", note: "In production, inference latency cut 6x", icon: "wrench" },
+            { name: "Strata", note: "M&A due-diligence platform", icon: "building" },
+          ],
+        },
+        { nodes: [{ name: "Constellation subsidiaries", note: "100+ use the tooling", icon: "users" }] },
+      ],
+    },
   },
   {
     company: "MobiSoins",
@@ -152,6 +210,45 @@ export const experience: Job[] = [
       { title: "Care.", small: "The visit timer runs on both sides.", patient: "patient-6", nurse: "nurse-6" },
       { title: "Done.", small: "Each side rates the other, and the visit closes.", patient: "patient-7", nurse: "nurse-7" },
     ],
+    detail: {
+      about: [
+        "On-demand home nursing marketplace, live on the Play Store with close to 100 nurses onboarded.",
+        "Built it 0→1: booking, real-time dispatch, live GPS tracking, geospatial nurse matching, and a Stripe payments layer guarded by 900+ tests.",
+      ],
+      // Follows the system diagram: no Redis, and Firebase carries the realtime layer.
+      stack: ["React Native", "NestJS", "TypeORM", "PostgreSQL", "AWS", "Firebase", "Stripe", "Twilio", "Mapbox", "Claude Haiku"],
+      architecture: [
+        { nodes: [{ name: "AWS", note: "EC2 hosting · Cognito auth · S3, SES, SNS · ca-central-1 residency", icon: "aws" }], up: "self-hosted" },
+        { nodes: [{ name: "PostgreSQL", note: "15 entities, 18 migrations, Law 25 audit", icon: "postgresql" }], up: "TypeORM" },
+        {
+          nodes: [{ name: "NestJS API", note: "18 modules, ~111 endpoints, system of record", icon: "nestjs" }],
+          up: "REST",
+          left: [
+            { name: "Stripe", note: "Escrow + Connect", icon: "stripe", links: [{ to: "NestJS API" }] },
+            { name: "Twilio", note: "Phone OTP", icon: "twilio", links: [{ to: "NestJS API" }] },
+          ],
+          right: [{ name: "Claude Haiku", note: "Support assistant, medical guardrail", icon: "claude", links: [{ to: "NestJS API" }] }],
+        },
+        {
+          nodes: [
+            { name: "Patient app", note: "Map, book, track, pay", icon: "expo" },
+            { name: "Nurse app", note: "Go online, accept, navigate", icon: "react" },
+          ],
+          left: [{ name: "Mapbox", note: "Maps + directions", icon: "mapbox", links: [{ to: "Patient app" }] }],
+          right: [
+            {
+              name: "Firebase",
+              note: "GPS, offers, chat, FCM push",
+              icon: "firebase",
+              links: [
+                { to: "Nurse app", kind: "realtime" },
+                { to: "NestJS API", label: "Admin SDK" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     company: "Webacy",
@@ -171,6 +268,19 @@ export const experience: Job[] = [
       { big: "100+", small: "Web3 projects analyzed with ML, engineering 20+ risk indicators.", fx: "blinds", stat: true },
       { big: "+15%", small: "Scoring accuracy in the production trust-scoring model.", fx: "bars", stat: true },
     ],
+    detail: {
+      about: [
+        "Web3 security platform.",
+        "Researched smart contract and wallet threats and analyzed on-chain data to flag risky contracts and wallets.",
+      ],
+      stack: ["OSINT", "OWASP", "Data analysis", "Data modeling", "Smart contracts"],
+      architecture: [
+        { nodes: [{ name: "On-chain data", icon: "database" }, { name: "Smart contracts", icon: "braces" }, { name: "OSINT", icon: "search" }] },
+        { nodes: [{ name: "Risk analysis", note: "Data modeling, 20+ risk indicators", icon: "chart" }] },
+        { nodes: [{ name: "Trust-scoring model", note: "In production, +15% scoring accuracy", icon: "sparkles" }] },
+        { nodes: [{ name: "Risk flags", note: "Risky contracts and wallets", icon: "shield" }] },
+      ],
+    },
   },
 ];
 
@@ -182,6 +292,7 @@ export type Project = {
   domain: string;
   beats: Beat[];
   stack: string;
+  detail: Detail;
 };
 
 export const otonmi: Project = {
@@ -200,6 +311,29 @@ export const otonmi: Project = {
     { big: "THE GAUNTLET", small: "An 8-level prompt-injection sandbox. 81 automated tests pin the detectors.", fx: "gates" },
   ],
   stack: "TypeScript · Next.js · Node.js · Claude API · PostgreSQL · Cloudflare Workers",
+  detail: {
+    about: [
+      "Runtime security platform for AI agents, inspecting every LLM-agent message and tool call against the OWASP LLM Top 10.",
+      "Built 6 detectors in a concurrent detection cascade that cut hot-path latency 4x, plus THE GAUNTLET, a prompt-injection sandbox that logs labeled attack data for detector tuning. 81 automated tests.",
+    ],
+    stack: ["TypeScript", "Next.js", "Node.js", "Claude API", "PostgreSQL", "Supabase", "Cloudflare Workers"],
+    architecture: [
+      {
+        nodes: [
+          { name: "Cloudflare Workers", icon: "cloudflareworkers" },
+          { name: "PostgreSQL", icon: "postgresql" },
+          { name: "Supabase", icon: "supabase" },
+          { name: "Claude API", icon: "claude" },
+        ],
+      },
+      { nodes: [{ name: "Agent traffic", note: "Every LLM-agent message and tool call", icon: "message" }], up: "inspected" },
+      {
+        nodes: [{ name: "Detection cascade", note: "6 concurrent detectors, mapped to the OWASP LLM Top 10", icon: "shield" }],
+        left: [{ name: "THE GAUNTLET", note: "8-level prompt-injection sandbox", icon: "flask", links: [{ to: "Detection cascade", label: "attack data" }] }],
+      },
+      { nodes: [{ name: "Findings", note: "Prompt injection, credential leakage, tool poisoning, data exfiltration", icon: "alert" }] },
+    ],
+  },
 };
 
 export const lezra: Project = {
@@ -214,14 +348,87 @@ export const lezra: Project = {
     { big: "Orchestrated in Temporal.", small: "For staffing, home-care, and field-service marketplaces.", fx: "shards" },
   ],
   stack: "TypeScript · NestJS · PostgreSQL · Temporal · Stripe Connect · AWS",
+  // Lezra is not on the LinkedIn profile yet, so this text comes from the site copy.
+  detail: {
+    about: [
+      "Vertical payments infrastructure for staffing, home-care, and field-service marketplaces.",
+      "A payments API for the full lifecycle after card collection: hold, capture, split, and payout.",
+    ],
+    stack: ["TypeScript", "NestJS", "PostgreSQL", "Temporal", "Stripe Connect", "AWS"],
+    architecture: [
+      { nodes: [{ name: "AWS", icon: "aws" }, { name: "PostgreSQL", icon: "postgresql" }, { name: "Stripe Connect", icon: "stripe" }] },
+      {
+        nodes: [
+          { name: "Double-entry ledger", note: "Append-only", icon: "book" },
+          { name: "Idempotency keys", icon: "key" },
+          { name: "Transactional outbox", icon: "inbox" },
+        ],
+      },
+      { nodes: [{ name: "Temporal workflows", note: "Hold, capture, split, payout", icon: "temporal" }] },
+      { nodes: [{ name: "Payments API", note: "NestJS, full lifecycle after card collection", icon: "nestjs" }] },
+      { nodes: [{ name: "Marketplaces", note: "Staffing, home care, field service", icon: "users" }] },
+    ],
+  },
 };
 
 export const statement = "Less hype. More shipped. Production AI, payments, and security, built end to end.";
 
 export const education = "University of Ottawa · B.A.Sc. Software Engineering, Co-op · Expected May 2028";
 
-export const skillRows = [
-  ["Python", "TypeScript", "SQL", "Java", "C++", "PyTorch", "scikit-learn", "RAG", "AI agents", "MCP", "LLM evals"],
-  ["React", "React Native", "Next.js", "Node.js", "NestJS", "Flask", "PostgreSQL", "MongoDB", "Redis", "Supabase"],
-  ["AWS", "Azure", "Docker", "Terraform", "Ansible", "GitHub Actions", "OpenTelemetry", "Grafana", "Linux", "OWASP"],
+/** One line of the Stack list. `icon` names a brand mark. Some brands have none. */
+export type StackItem = { name: string; icon?: string };
+
+export const stack: { title: string; items: StackItem[] }[] = [
+  {
+    title: "AI / ML",
+    items: [
+      { name: "Claude API", icon: "claude" },
+      { name: "OpenAI / Azure OpenAI" },
+      { name: "Amazon Bedrock", icon: "aws" },
+      { name: "RAG" },
+      { name: "pgvector" },
+      { name: "Agentic workflows" },
+      { name: "Prompt engineering" },
+      { name: "Spec-driven dev" },
+    ],
+  },
+  {
+    title: "Languages",
+    items: [
+      { name: "TypeScript", icon: "typescript" },
+      { name: "JavaScript", icon: "javascript" },
+      { name: "Python", icon: "python" },
+      { name: "C#" },
+      { name: "Java" },
+      { name: "C / C++", icon: "cplusplus" },
+      { name: "SQL" },
+      { name: "HTML / CSS", icon: "html5" },
+    ],
+  },
+  {
+    title: "Frameworks",
+    items: [
+      { name: "Next.js", icon: "nextdotjs" },
+      { name: "React", icon: "react" },
+      { name: "FastAPI", icon: "fastapi" },
+      { name: "Express", icon: "express" },
+      { name: "Spring Boot", icon: "springboot" },
+      { name: ".NET Core", icon: "dotnet" },
+      { name: "LangChain", icon: "langchain" },
+      { name: "Tailwind", icon: "tailwindcss" },
+    ],
+  },
+  {
+    title: "Infra / Cloud",
+    items: [
+      { name: "Azure Container Apps" },
+      { name: "AWS Bedrock", icon: "aws" },
+      { name: "Docker", icon: "docker" },
+      { name: "PostgreSQL", icon: "postgresql" },
+      { name: "Supabase", icon: "supabase" },
+      { name: "GitHub Actions", icon: "githubactions" },
+      { name: "Firebase", icon: "firebase" },
+      { name: "REST APIs" },
+    ],
+  },
 ];

@@ -10,16 +10,29 @@
   --ink: #0c0c0d;
   --mute: #4f4f54;
   --gutter: clamp(16px, 3.4vw, 56px);
-  --card-hero: min(36svh, 62vw);
-  --hero-y: 30svh;
+  --hero-pad: clamp(34px, 4.4vw, 68px);
+  --hero-name: min(27vw, 21svh);
+  --hero-sentence: clamp(1.625rem, min(3.3vw, 6svh), 3.25rem);
+  --hero-lines: 3;
+  /* Free height above the hero text: the screen minus the two-line name, the sentence,
+     the Play control (44px + two 16px gaps), the header (72px) and the pick row under the card (52px). */
+  --hero-room: calc(100svh - var(--hero-pad) - 1.86 * var(--hero-name) - var(--hero-lines) * 1.42 * var(--hero-sentence) - 200px);
+  --card-hero: max(96px, min(36svh, 62vw, var(--hero-room)));
+  --hero-y: calc(72px + max(var(--hero-room), var(--card-hero)) / 2);
   --card-xp: min(38svh, 62vw);
   --xp-y: 30svh;
 }
 
+@media (min-width: 600px) {
+  :root {
+    --hero-lines: 2;
+  }
+}
+
 @media (min-width: 900px) {
   :root {
-    --card-hero: min(36svh, 28vw);
-    --hero-y: 28svh;
+    --card-hero: min(34svh, 28vw);
+    --hero-y: 26svh;
     --card-xp: min(56svh, 36vw);
     --xp-y: 50svh;
   }
@@ -110,6 +123,520 @@ body {
   z-index: 45;
 }
 
+/* Inside a chapter the bar takes the color of that chapter. */
+html[data-chapter] .progress {
+  background: var(--chapter);
+  mix-blend-mode: normal;
+}
+
+/* One tick on the bar for each stop. A press jumps there. */
+.ticks,
+.chapter,
+.curtain {
+  display: none;
+}
+
+.motion .ticks {
+  color: #fff;
+  display: block;
+  height: 12px;
+  inset: 0 0 auto;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  position: fixed;
+  z-index: 47;
+}
+
+.ticks button {
+  cursor: pointer;
+  height: 12px;
+  margin-left: -8px;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  transition: opacity 200ms;
+  width: 16px;
+}
+
+.ticks button::before {
+  background: currentColor;
+  content: "";
+  height: 7px;
+  left: 50%;
+  margin-left: -0.5px;
+  position: absolute;
+  top: 0;
+  transition: height 200ms;
+  width: 1px;
+}
+
+.ticks button:hover,
+.ticks button[data-on] {
+  opacity: 1;
+}
+
+.ticks button[data-on]::before {
+  height: 11px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ticks button {
+    pointer-events: auto;
+  }
+}
+
+/* Chapter counter, bottom left. */
+.motion .chapter {
+  align-items: center;
+  bottom: clamp(20px, 4.5svh, 40px);
+  color: #fff;
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  gap: 14px;
+  height: 44px;
+  left: var(--gutter);
+  letter-spacing: 0.02em;
+  mix-blend-mode: difference;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 320ms;
+  z-index: 44;
+}
+
+.motion .chapter[data-on] {
+  opacity: 1;
+}
+
+.chapter.on-lime {
+  color: #0a0a0a;
+  mix-blend-mode: normal;
+}
+
+.chapter [data-chapter-name] {
+  opacity: 0.6;
+}
+
+/* Covers the screen while a long jump moves the page. */
+.motion .curtain {
+  background: #0c0c0d;
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  transform: scaleY(0);
+  z-index: 48;
+}
+
+/* Details: the full view of one section. It rises over the page. */
+.sum-more,
+.sheet {
+  display: none;
+}
+
+.motion .sheet {
+  display: block;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: fixed;
+  visibility: hidden;
+  z-index: 49;
+}
+
+.sheet-panel {
+  background: var(--face);
+  color: var(--ink);
+  min-height: 100%;
+  padding: 0 var(--gutter) clamp(40px, 8svh, 96px);
+}
+
+.sheet-panel[data-details="otonmi"] {
+  --acc: #d92a2a;
+  --face: #0a0a0a;
+  --ink: #f4f4f2;
+}
+
+.sheet-panel[data-details="lezra"] {
+  --acc: #0a0a0a;
+  --face: #d8ff1a;
+  --ink: #0a0a0a;
+}
+
+.sheet-top {
+  align-items: center;
+  background: var(--face);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  display: flex;
+  justify-content: space-between;
+  min-height: 72px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.sheet-close {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  min-height: 44px;
+  padding-left: 1.25em;
+}
+
+.sheet-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: clamp(28px, 6svh, 72px);
+}
+
+.sheet-head h2 {
+  font-size: clamp(2.75rem, min(8vw, 14svh), 7.5rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+  margin-right: 0.08em;
+}
+
+.sheet-meta {
+  margin-top: 1.2em;
+}
+
+.sheet-grid {
+  display: grid;
+  gap: 40px;
+  margin-top: clamp(32px, 6svh, 64px);
+}
+
+@media (min-width: 900px) {
+  /* Text on the left, stack on the right. The architecture map takes the full width under them. */
+  .sheet-grid {
+    column-gap: clamp(48px, 7vw, 120px);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+
+  .sheet .dt-arch-block {
+    grid-column: 1 / -1;
+  }
+
+  /* A role that has not started yet has one block only. */
+  .sheet .dt-about:only-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.dt-label {
+  align-items: center;
+  color: color-mix(in srgb, currentColor 72%, transparent);
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  gap: 10px;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.1em;
+}
+
+.sheet .dt-label::before {
+  background: var(--acc);
+  content: "";
+  height: 8px;
+  width: 8px;
+}
+
+.dt-about p + p {
+  margin-top: 0.9em;
+}
+
+.sheet .dt-about p {
+  font-size: clamp(1.25rem, min(2vw, 3.6svh), 1.875rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.22;
+  max-width: 30em;
+  text-wrap: pretty;
+}
+
+.dt-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.dt-stack li {
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  padding: 0.55em 1em;
+}
+
+/* Architecture map. It reads from the bottom up: the list runs base first,
+   and column-reverse draws the base lowest. */
+.map {
+  --map-bg: var(--paper);
+  --map-gap: 44px;
+  --map-line: color-mix(in srgb, currentColor 22%, transparent);
+  border: 1px solid var(--map-line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* On a section color, boxes and labels are filled with that color. */
+.pj .map,
+.sheet .map {
+  --map-bg: var(--face);
+}
+
+.map-head {
+  align-items: center;
+  border-bottom: 1px solid var(--map-line);
+  display: flex;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  gap: 16px;
+  justify-content: space-between;
+  letter-spacing: -0.01em;
+  padding: 14px 18px;
+}
+
+.map-legend {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  opacity: 0.7;
+}
+
+.map-body {
+  background-image: radial-gradient(color-mix(in srgb, currentColor 16%, transparent) 1px, transparent 1px);
+  background-size: 16px 16px;
+  padding: clamp(14px, 2.4vw, 32px);
+  position: relative;
+}
+
+.map-rows {
+  display: flex;
+  flex-direction: column-reverse;
+  list-style: none;
+}
+
+.map-row {
+  display: grid;
+  gap: 12px;
+  position: relative;
+}
+
+.map-row:not(:last-child) {
+  margin-top: var(--map-gap);
+}
+
+.map-center {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  order: -1;
+}
+
+.map-side {
+  align-content: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* One box: an icon tile, a name, and a short note. */
+.map-card {
+  align-items: center;
+  background: color-mix(in srgb, currentColor 6%, var(--map-bg));
+  border: 1px solid var(--map-line);
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.map-icon {
+  align-items: center;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  border: 1px solid var(--map-line);
+  border-radius: 10px;
+  display: flex;
+  flex: none;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.map-icon:empty {
+  display: none;
+}
+
+.icon {
+  flex: none;
+  height: 18px;
+  width: 18px;
+}
+
+.map-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.map-text strong {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+.map-text span {
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  opacity: 0.72;
+}
+
+/* What a side box links to, in words. Shown where no lines are drawn. */
+.map-text .map-to {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+/* The line from a layer to the layer above it, with an optional label. */
+.map-up {
+  align-items: center;
+  bottom: 100%;
+  display: flex;
+  height: var(--map-gap);
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.map-up::before {
+  background: color-mix(in srgb, currentColor 55%, transparent);
+  content: "";
+  height: 100%;
+  left: 50%;
+  position: absolute;
+  width: 1px;
+}
+
+.map-up i,
+.map-tags span {
+  background: var(--map-bg);
+  border: 1px solid var(--map-line);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-style: normal;
+  line-height: 1;
+  padding: 4px 9px;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Lines from the side boxes. The director draws them from the measured layout. */
+.map-links,
+.map-tags {
+  display: none;
+}
+
+.map-links path {
+  fill: none;
+  stroke: currentColor;
+  stroke-opacity: 0.6;
+  stroke-width: 1.25;
+}
+
+.map-links path[data-kind="realtime"] {
+  stroke-dasharray: 1 6;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.map-links circle {
+  fill: currentColor;
+}
+
+.map-tags span {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 900px) {
+  /* Outside services stand left and right of the layer they serve. */
+  .sheet .map[data-sides] .map-row {
+    column-gap: clamp(40px, 6vw, 96px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr) minmax(0, 1fr);
+  }
+
+  .sheet .map[data-sides] .map-center {
+    grid-column: 2;
+    order: 0;
+  }
+
+  .sheet .map[data-sides] .map-right {
+    grid-column: 3;
+  }
+
+  /* A layer with services on one side only takes the free side too. */
+  .sheet .map[data-sides] .map-row:not(:has(.map-right)) .map-center {
+    grid-column: 2 / -1;
+  }
+
+  .sheet .map[data-sides] .map-center:first-child {
+    grid-column: 1 / 3;
+  }
+
+  .sheet .map[data-sides] .map-row[data-wide] .map-center {
+    grid-column: 1 / -1;
+  }
+
+  .sheet .map-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sheet .map-links,
+  .sheet .map-tags {
+    display: block;
+    height: 100%;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  .sheet .map-tags {
+    z-index: 2;
+  }
+
+  .sheet .map-to {
+    display: none;
+  }
+}
+
+/* Without motion the same blocks sit in the page, under their section. */
+.more {
+  display: grid;
+  gap: 28px;
+  margin-top: 28px;
+  max-width: 44rem;
+}
+
+.motion .more {
+  display: none;
+}
+
 .cursor {
   display: none;
 }
@@ -151,7 +678,7 @@ body {
   display: flex;
   font-size: 1.0625rem;
   inset: 0 0 auto;
-  justify-content: flex-end;
+  justify-content: space-between;
   mix-blend-mode: difference;
   padding: 10px var(--gutter);
   position: fixed;
@@ -161,6 +688,79 @@ body {
 .site-header.on-lime {
   color: #0a0a0a;
   mix-blend-mode: normal;
+}
+
+.site-mark {
+  align-items: center;
+  display: inline-flex;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  min-height: 44px;
+}
+
+.site-nav {
+  display: flex;
+  font-size: 0.9375rem;
+  gap: 14px;
+}
+
+.nav-group {
+  position: relative;
+}
+
+.site-nav .link-line[aria-current] {
+  background-size: 100% 1px;
+}
+
+.nav-sub {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .site-nav {
+    font-size: 1.0625rem;
+    gap: 28px;
+  }
+}
+
+/* The list under a header link opens on hover or keyboard focus. */
+@media (hover: hover) and (pointer: fine) {
+  .nav-sub {
+    display: block;
+    font-size: 0.9375rem;
+    left: 0;
+    opacity: 0;
+    padding-bottom: 12px;
+    position: absolute;
+    top: 100%;
+    transform: translateY(-6px);
+    transition:
+      opacity 220ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 220ms;
+    visibility: hidden;
+    white-space: nowrap;
+  }
+
+  .nav-group:hover .nav-sub,
+  .nav-group:focus-within .nav-sub {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+  }
+
+  .nav-sub a {
+    display: block;
+    opacity: 0.55;
+    padding-block: 4px;
+    transition: opacity 180ms;
+  }
+
+  .nav-sub a:hover,
+  .nav-sub a:focus-visible,
+  .nav-sub a[aria-current] {
+    opacity: 1;
+  }
 }
 
 .link-line {
@@ -235,7 +835,7 @@ body {
   justify-content: flex-end;
   min-height: 100svh;
   overflow: clip;
-  padding-bottom: clamp(34px, 4.4vw, 68px);
+  padding-bottom: var(--hero-pad);
   position: relative;
 }
 
@@ -256,8 +856,103 @@ body {
   touch-action: pan-y;
 }
 
+/* Pick row, under the card: turn the card to a section, then open it. */
+.hero-pick {
+  display: none;
+}
+
+/* The layer covers the hero and lets presses through, so each control sits against the card. */
+.motion .hero-pick {
+  --arrow: 44px;
+  --arrow-gap: clamp(10px, 2.2vw, 32px);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  inset: 0;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  position: absolute;
+}
+
+.hero-pick button {
+  color: var(--ink);
+  cursor: pointer;
+  pointer-events: auto;
+  position: absolute;
+}
+
+/* The name of the face the card shows, under the card. */
+.hero-pick-go {
+  left: 50%;
+  min-height: 44px;
+  padding: 0 0.75em;
+  top: calc(var(--hero-y) + var(--card-hero) / 2 + 8px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.hero-pick-go[data-on] span {
+  text-decoration: underline;
+  text-underline-offset: 0.35em;
+}
+
+/* One round arrow on each side of the card, at its middle height. */
+.hero-arrow {
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border-radius: 50%;
+  display: flex;
+  height: var(--arrow);
+  justify-content: center;
+  top: calc(var(--hero-y) - var(--arrow) / 2);
+  transition:
+    background-color 200ms,
+    border-color 200ms,
+    color 200ms;
+  width: var(--arrow);
+}
+
+.hero-arrow[data-pick-step="-1"] {
+  left: calc(50% - var(--card-hero) / 2 - var(--arrow-gap) - var(--arrow));
+}
+
+.hero-arrow[data-pick-step="1"] {
+  left: calc(50% + var(--card-hero) / 2 + var(--arrow-gap));
+}
+
+.hero-pick .hero-arrow:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.hero-arrow:focus-visible {
+  border-radius: 50%;
+}
+
+.hero-arrow svg {
+  fill: none;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+  width: 18px;
+}
+
+@media (min-width: 900px) {
+  .motion .hero-pick {
+    --arrow: 52px;
+  }
+
+  .hero-arrow svg {
+    height: 20px;
+    width: 20px;
+  }
+}
+
 .hero-sentence {
-  font-size: clamp(1.625rem, min(3.3vw, 6svh), 3.25rem);
+  font-size: var(--hero-sentence);
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 1.08;
@@ -266,7 +961,8 @@ body {
 }
 
 .hero-name {
-  font-size: 27vw;
+  /* The height cap leaves room for the photo on wide, short screens. */
+  font-size: var(--hero-name);
   font-weight: 600;
   letter-spacing: -0.06em;
   line-height: 0.86;
@@ -315,31 +1011,6 @@ body {
   letter-spacing: -0.025em;
   line-height: 1.16;
   margin-top: 0.5em;
-}
-
-.beat-note {
-  font-family: var(--font-mono);
-  font-size: 0.9375rem;
-  margin-top: 1.5em;
-}
-
-.cta {
-  border-radius: 0.28em;
-  display: inline-block;
-  font-size: min(calc(140vw / (var(--len) + 1.5)), 12rem);
-  font-weight: 600;
-  letter-spacing: -0.05em;
-  line-height: 1.1;
-  margin-top: 0.1em;
-  padding: 0.02em 0.22em 0.08em;
-  position: relative;
-  text-decoration: underline;
-  text-decoration-thickness: 0.06em;
-  text-underline-offset: 0.12em;
-  transition:
-    background-color 220ms,
-    color 220ms;
-  white-space: nowrap;
 }
 
 .motion .beats {
@@ -397,50 +1068,178 @@ body {
   text-wrap: balance;
 }
 
-.motion .beat-cta .beat-small {
-  margin-top: 0;
-}
-
-.motion .beat-note {
-  font-size: clamp(1rem, 1.5vw, 1.5rem);
-  margin-top: 1.1em;
-}
-
-.motion .cta {
-  background: transparent;
-  color: var(--ink);
-  pointer-events: auto;
-}
-
-.motion .cta::after {
-  animation: cta-pulse 1.8s ease-out infinite;
-  border: 2px solid var(--ink);
-  border-radius: inherit;
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-}
-
-.motion .cta:hover {
-  background: var(--ink);
-  color: var(--face);
-  text-decoration-color: transparent;
-}
-
 .motion .beat[data-fx="iris"] .beat-inner {
   color: var(--acc-ink);
 }
 
-@keyframes cta-pulse {
-  from {
-    opacity: 0.8;
-    transform: scale(1);
+/* Summary: where a chapter rests after its points have played. */
+.sum-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  position: relative;
+}
+
+.sum-head h2 {
+  font-size: clamp(2.75rem, 6.2vw, 6.5rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.sum-meta {
+  margin-top: 0.9em;
+}
+
+.sum-points,
+.sum-replay,
+.sum-logo,
+.sum-tagline {
+  display: none;
+}
+
+.chip {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  min-height: 44px;
+  padding: 0 1.25em;
+  transition:
+    background-color 200ms,
+    color 200ms;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  background: var(--ink);
+  color: var(--face, var(--paper));
+}
+
+.motion .sum {
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  inset: 104px var(--gutter) 96px;
+  justify-content: center;
+  position: absolute;
+  visibility: hidden;
+}
+
+.motion .sum-head h2 {
+  font-size: clamp(3rem, min(10vw, 17svh), 10rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+  margin-right: 0.08em;
+}
+
+.motion .chip,
+.motion .sum-replay {
+  pointer-events: auto;
+}
+
+.motion .sum-replay {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  min-height: 44px;
+  opacity: 0.6;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  transition: opacity 180ms;
+}
+
+.motion .sum-replay:hover {
+  opacity: 1;
+}
+
+.motion .sum-more {
+  align-items: center;
+  background: var(--ink);
+  border-radius: 999px;
+  color: var(--face, var(--paper));
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  min-height: 44px;
+  padding: 0 1.25em;
+  pointer-events: auto;
+  transition: opacity 180ms;
+  white-space: nowrap;
+}
+
+.motion .sum-more:hover {
+  opacity: 0.82;
+}
+
+.motion .sum-logo {
+  display: block;
+  flex: none;
+  height: clamp(2.75rem, 8svh, 5rem);
+  margin-right: 12px;
+}
+
+.motion .sum-tagline {
+  display: block;
+  font-size: clamp(1.5rem, min(3.2vw, 5.6svh), 3.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-top: 0.7em;
+  max-width: 18em;
+  text-wrap: balance;
+}
+
+.motion .sum-meta {
+  margin-top: 1.4em;
+}
+
+.motion .sum-points {
+  display: grid;
+  gap: 20px 0;
+  list-style: none;
+  margin-top: clamp(24px, 5svh, 56px);
+}
+
+.motion .sum-points li {
+  border-top: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  padding: 14px 24px 0 0;
+}
+
+.motion .sum-points strong {
+  display: block;
+  font-size: clamp(1.375rem, min(2.5vw, 4.4svh), 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+}
+
+.motion .sum-points span {
+  display: block;
+  font-size: clamp(0.9375rem, 1.25vw, 1.1875rem);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-top: 0.5em;
+  max-width: 24em;
+  opacity: 0.78;
+}
+
+@media (min-width: 900px) {
+  .motion .sum-points {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  to {
-    opacity: 0;
-    transform: scale(1.14, 1.5);
+  .motion .sum-points li {
+    padding: 20px 32px 0 0;
   }
 }
 
@@ -565,26 +1364,8 @@ body {
   width: auto;
 }
 
-.xp-title h2 {
-  font-size: clamp(2.75rem, 6.2vw, 6.5rem);
-  font-weight: 500;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  margin-bottom: 0.12em;
-}
-
-.xp-title p:nth-child(2) {
-  font-size: clamp(1.25rem, 2.1vw, 2rem);
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-}
-
-.xp-title .meta {
-  margin-top: 0.6em;
-}
-
 .motion .xp {
-  height: 1380svh;
+  height: 460svh;
   padding: 0;
 }
 
@@ -622,7 +1403,7 @@ body {
 .motion .xp-rail button {
   cursor: pointer;
   min-height: 32px;
-  opacity: 0.42;
+  opacity: 0.5;
   transition: opacity 220ms;
 }
 
@@ -650,30 +1431,11 @@ body {
   position: absolute;
 }
 
-.motion .xp-title {
-  color: #0c0c0d;
-  inset: calc(var(--xp-y) + var(--card-xp) / 2 + 28px) var(--gutter) auto;
-  position: absolute;
-}
-
-.motion [data-title] {
-  visibility: hidden;
-}
-
 @media (min-width: 900px) {
   .motion .xp-rail {
-    font-size: 1.0625rem;
+    font-size: 0.9375rem;
     gap: 22px;
-    top: 10px;
-  }
-
-  .motion .xp-title {
-    inset: auto auto 44px var(--gutter);
-    max-width: 28vw;
-  }
-
-  .motion .xp-title h2 {
-    font-size: clamp(3rem, 5.4vw, 6rem);
+    top: 60px;
   }
 }
 
@@ -683,7 +1445,7 @@ body {
 }
 
 .motion .pj {
-  height: 480svh;
+  height: 126svh;
 }
 
 .pj-otonmi {
@@ -721,6 +1483,7 @@ body {
 }
 
 .pj-head {
+  position: relative;
   text-align: center;
 }
 
@@ -774,7 +1537,7 @@ body {
 .about {
   background: var(--paper);
   overflow: clip;
-  padding-block: clamp(96px, 20svh, 220px) 96px;
+  padding-block: clamp(72px, 12svh, 140px) 72px;
   position: relative;
 }
 
@@ -791,52 +1554,69 @@ body {
   letter-spacing: -0.02em;
 }
 
-.skills {
-  margin-top: clamp(72px, 16svh, 160px);
+.stack {
+  margin-top: clamp(56px, 10svh, 110px);
 }
 
-.skill-row {
-  display: flex;
-  font-size: clamp(2.25rem, 6.4vw, 6.5rem);
+.stack-label {
+  color: var(--mute);
+}
+
+.stack-grid {
+  display: grid;
+  gap: 40px 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 28px;
+}
+
+.stack-grid h3 {
+  font-size: clamp(1.375rem, 2vw, 1.875rem);
   font-weight: 500;
-  letter-spacing: -0.05em;
-  line-height: 1.16;
-  white-space: nowrap;
-  width: max-content;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
-.skill-row ul {
+.stack-grid ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin-top: 18px;
+}
+
+.stack-grid li {
+  align-items: center;
   display: flex;
+  font-size: clamp(0.9375rem, 1.15vw, 1.0625rem);
+  gap: 12px;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
 }
 
-.skill-row li {
-  color: #98989a;
-  padding-right: 0.55em;
-  transition: color 180ms;
+/* The slot stays when a line has no icon, so every name starts at the same place. */
+.stack-icon {
+  display: flex;
+  flex: none;
+  justify-content: center;
+  width: 18px;
 }
 
-.skill-row li:hover {
-  color: var(--ink);
+.stack-icon .icon {
+  height: 16px;
+  width: 16px;
 }
 
-html:not(.motion) .skill-row {
-  white-space: normal;
-  width: auto;
-}
-
-html:not(.motion) .skill-row ul {
-  flex-wrap: wrap;
-  padding-inline: var(--gutter);
-}
-
-html:not(.motion) .skill-copy {
-  display: none;
+@media (min-width: 900px) {
+  .stack-grid {
+    gap: 32px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /* Contact */
 .contact {
   background: var(--paper);
-  padding-block: clamp(72px, 16svh, 160px) 28px;
+  /* The bottom space keeps the closing row clear of the Play control. */
+  padding-block: clamp(56px, 10svh, 110px) clamp(92px, 12svh, 112px);
   position: relative;
 }
 
@@ -870,6 +1650,30 @@ html:not(.motion) .skill-copy {
 
 .contact-mail:hover {
   background: #333336;
+}
+
+.closing {
+  align-items: center;
+  border-top: 1px solid rgb(12 12 13 / 0.16);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 1rem;
+  gap: 0 32px;
+  margin-top: clamp(40px, 8svh, 88px);
+  padding-top: 12px;
+}
+
+.closing button {
+  cursor: pointer;
+}
+
+.closing .meta {
+  color: var(--mute);
+  margin-left: auto;
+}
+
+html:not(.motion) [data-watch-again] {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -930,8 +1734,56 @@ html:not(.motion) .skill-copy {
   width: min(44%, 220px);
 }
 
-.app-phones {
+.app-phones,
+.app-dots {
   display: none;
+}
+
+/* One dot for each step. The fill of the active dot is the timer of its step. */
+.motion .app-dots {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+/* The step dots and the Details button share one row. */
+.motion .app-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 20px;
+}
+
+.app-dots button {
+  cursor: pointer;
+  height: 32px;
+  position: relative;
+  width: clamp(26px, 3vw, 40px);
+}
+
+.app-dots button::before,
+.app-dots i {
+  background: var(--ink);
+  content: "";
+  height: 2px;
+  inset: 50% 0 auto;
+  margin-top: -1px;
+  position: absolute;
+}
+
+.app-dots button::before {
+  opacity: 0.2;
+  transition: opacity 180ms;
+}
+
+.app-dots button:hover::before {
+  opacity: 0.45;
+}
+
+.app-dots i {
+  transform: scaleX(0);
+  transform-origin: left;
 }
 
 .motion .app-story {
@@ -1022,10 +1874,11 @@ html:not(.motion) .skill-copy {
 @media (max-width: 899px) {
   .motion .app-story {
     align-content: center;
-    gap: 44px;
+    gap: 28px;
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
-    padding: 72px var(--gutter) 28px;
+    /* The bottom space keeps the phones clear of the chapter counter and the Play control. */
+    padding: 72px var(--gutter) 96px;
   }
 
   .motion .app-copy {
@@ -1033,7 +1886,7 @@ html:not(.motion) .skill-copy {
   }
 
   .motion .app-steps {
-    height: 24svh;
+    height: 22svh;
     margin-top: 10px;
   }
 
@@ -1043,7 +1896,7 @@ html:not(.motion) .skill-copy {
   }
 
   .motion .app-slot {
-    height: min(52svh, 84vw);
+    height: min(46svh, 75vw);
   }
 }
 

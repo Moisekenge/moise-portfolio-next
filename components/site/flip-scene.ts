@@ -9,7 +9,8 @@ export type FaceSpec = {
   accent?: string;
 };
 
-export type FlipState = { x: number; y: number; size: number; p: number; expand: number; tiltX: number; tiltY: number };
+/** `p` picks the faces. `rot` is the turn of the card in half turns, when it differs from `p`. */
+export type FlipState = { x: number; y: number; size: number; p: number; rot?: number; expand: number; tiltX: number; tiltY: number };
 
 const RADIUS = 0.225;
 const DEPTH = 0.075;
@@ -259,12 +260,24 @@ export function createFlipScene(canvas: HTMLCanvasElement, specs: FaceSpec[]) {
   const accents = specs.map((spec) => color(spec.accent ?? "#ffffff"));
   const inks = specs.map((spec) => color(spec.ink ?? "#ffffff"));
 
+  // Two faces with the same image share one texture.
+  const loaded = new Map<string, Promise<THREE.Texture>>();
+  const load = (spec: FaceSpec) => {
+    const key = spec.photo ?? (spec.src as string);
+    let texture = loaded.get(key);
+    if (!texture) {
+      texture = (spec.photo ? photoCanvas(spec.photo) : logoCanvas(key)).then((source) => {
+        const made = toTexture(source, anisotropy);
+        renderer.initTexture(made);
+        return made;
+      });
+      loaded.set(key, texture);
+    }
+    return texture;
+  };
   const ready = Promise.all(
     specs.map(async (spec, index) => {
-      const source = spec.photo ? await photoCanvas(spec.photo) : await logoCanvas(spec.src as string);
-      const texture = toTexture(source, anisotropy);
-      renderer.initTexture(texture);
-      textures[index] = texture;
+      textures[index] = await load(spec);
     }),
   );
 
@@ -285,7 +298,7 @@ export function createFlipScene(canvas: HTMLCanvasElement, specs: FaceSpec[]) {
   }
 
   /** Draws the card, then `overlay` on top of it with a fresh depth buffer. */
-  function draw({ x, y, size, p, expand, tiltX, tiltY }: FlipState, overlay?: THREE.Scene) {
+  function draw({ x, y, size, p, rot = p, expand, tiltX, tiltY }: FlipState, overlay?: THREE.Scene) {
     const last = specs.length - 1;
     const frontIndex = Math.min(2 * Math.round(p / 2), last);
     const backIndex = Math.min(2 * Math.floor(p / 2) + 1, last);
@@ -310,7 +323,7 @@ export function createFlipScene(canvas: HTMLCanvasElement, specs: FaceSpec[]) {
     const py = height / 2 - y;
     card.position.set(px, py, 0);
     card.scale.setScalar(size);
-    card.rotation.set(tiltX, Math.PI * p + tiltY, 0);
+    card.rotation.set(tiltX, Math.PI * rot + tiltY, 0);
 
     const spread = Math.max(0.12, Math.abs(Math.cos(Math.PI * p)));
     shadow.position.set(px, py - size * 0.09, -size * 0.55);

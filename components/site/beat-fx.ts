@@ -10,7 +10,6 @@ const HOLD = 0.38;
 const OUT = 0.36;
 export const BEAT_LENGTH = IN + HOLD + OUT;
 
-const CTA_HOLD = 0.6;
 const off = { immediateRender: false };
 const outAt = (at: number) => at + IN + HOLD;
 
@@ -364,26 +363,12 @@ const FX: Record<string, Effect> = {
   },
 };
 
-function addCta(tl: Timeline, beat: HTMLElement, at: number) {
-  const inner = beat.querySelector<HTMLElement>(".beat-inner");
-  const total = IN + CTA_HOLD + OUT;
-  tl.set(beat, { autoAlpha: 1 }, at);
-  tl.fromTo(inner, { scale: 0.04, opacity: 0 }, { scale: 1, opacity: 1, duration: IN, ease: "power3.out", ...off }, at);
-  tl.to(inner, { scale: 5, opacity: 0, duration: OUT, ease: "power2.in" }, at + IN + CTA_HOLD);
-  tl.set(beat, { autoAlpha: 0 }, at + total);
-  return at + total;
-}
-
 /** Adds every beat of a container in order, and returns the end time. */
-export function addBeats(tl: Timeline, root: ParentNode, start: number, after?: (index: number, at: number) => number) {
+export function addBeats(tl: Timeline, root: ParentNode, start: number) {
   let at = start;
-  gsap.utils.toArray<HTMLElement>(root.querySelectorAll(".beat")).forEach((beat, index) => {
+  gsap.utils.toArray<HTMLElement>(root.querySelectorAll(".beat")).forEach((beat) => {
     gsap.set(beat, { autoAlpha: 0 });
     const fx = beat.dataset.fx ?? "zoom";
-    if (fx === "cta") {
-      at = addCta(tl, beat, at);
-      return;
-    }
     const big = beat.querySelector<HTMLElement>(".beat-big")!;
     const small = beat.querySelector<HTMLElement>(".beat-small");
     const layer = beat.querySelector<HTMLElement>(".beat-fx");
@@ -394,7 +379,6 @@ export function addBeats(tl: Timeline, root: ParentNode, start: number, after?: 
     tl.to(small, { scale: 1.8, opacity: 0, duration: OUT * 0.7, ease: "power2.in" }, outAt(at));
     tl.set(beat, { autoAlpha: 0 }, at + BEAT_LENGTH);
     at += BEAT_LENGTH;
-    if (after) at = after(index, at);
   });
   return at;
 }

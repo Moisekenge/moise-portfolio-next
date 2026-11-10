@@ -1,6 +1,8 @@
 import Image from "next/image";
+import { Chip, DetailBlocks, DetailsButton, detailId } from "@/components/site/details";
+import { Icon } from "@/components/site/icon";
 import { LezraLockup, OtonmiLockup } from "@/components/site/project-logos";
-import { education, experience, lezra, otonmi, profile, skillRows, statement, type AppStep, type Beat, type Project } from "@/content/portfolio";
+import { education, experience, lezra, otonmi, profile, stack, statement, type AppStep, type Beat, type Project } from "@/content/portfolio";
 
 const personJsonLd = JSON.stringify({
   "@context": "https://schema.org",
@@ -12,7 +14,7 @@ const personJsonLd = JSON.stringify({
 
 type Vars = React.CSSProperties & Record<`--${string}`, string | number>;
 
-function AppStory({ steps }: { steps: AppStep[] }) {
+function AppStory({ steps, details }: { steps: AppStep[]; details: string }) {
   return (
     <div className="app-story" data-app-story>
       <div className="app-copy">
@@ -30,6 +32,16 @@ function AppStory({ steps }: { steps: AppStep[] }) {
             </li>
           ))}
         </ol>
+        <div className="app-actions">
+          <div className="app-dots" role="group" aria-label="Walkthrough steps">
+            {steps.map((step, index) => (
+              <button type="button" key={step.title} data-app-dot={index} data-cursor={step.title} aria-label={`Step ${index + 1}: ${step.title}`}>
+                <i />
+              </button>
+            ))}
+          </div>
+          <DetailsButton id={details} />
+        </div>
       </div>
       <div className="app-phones" aria-hidden="true">
         <div className="app-slot" data-phone="patient">
@@ -46,7 +58,7 @@ function AppStory({ steps }: { steps: AppStep[] }) {
   );
 }
 
-function Beats({ beats, url, domain, note }: { beats: Beat[]; url: string; domain: string; note?: string }) {
+function Beats({ beats }: { beats: Beat[] }) {
   return (
     <div className="beats">
       {beats.map((beat) => (
@@ -58,39 +70,60 @@ function Beats({ beats, url, domain, note }: { beats: Beat[]; url: string; domai
           </div>
         </div>
       ))}
-      <div className="beat beat-cta" data-fx="cta">
-        <div className="beat-inner">
-          <p className="beat-small">Take a look</p>
-          <a
-            href={url}
-            target="_blank"
-            rel="noreferrer"
-            className="cta magnetic"
-            data-cursor="Open"
-            style={{ "--len": domain.length } as Vars}
-          >
-            {domain}
-            <span aria-hidden="true"> ↗</span>
-          </a>
-          {note ? <p className="beat-note">{note}</p> : null}
-        </div>
-      </div>
     </div>
+  );
+}
+
+/** Every point of a chapter side by side. The animated chapters rest on this. */
+function Points({ beats }: { beats: Beat[] }) {
+  return (
+    <ul className="sum-points" aria-hidden="true">
+      {beats.map((beat) => (
+        <li key={beat.big}>
+          <strong>{beat.big}</strong>
+          <span>{beat.small}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Replay() {
+  return (
+    <button type="button" className="sum-replay" data-replay data-cursor="Replay">
+      Replay
+    </button>
   );
 }
 
 function ProjectScene({ project, id, children }: { project: Project; id?: string; children: React.ReactNode }) {
   const kind = project.label.toLowerCase();
   return (
-    <section id={id} className={`pj pj-${kind}`} aria-label={project.label} data-project={kind}>
-      <div className="pj-stage">
+    <section id={id} className={`pj pj-${kind}`} aria-label={project.label} data-project={kind} data-chapter={project.label}>
+      <div className="pj-stage" id={id === kind ? undefined : kind}>
         <div className="pj-head" data-head>
           {children}
           <p className="pj-tagline" data-tagline>
             {project.tagline}
           </p>
         </div>
-        <Beats beats={project.beats} url={project.url} domain={project.domain} note={project.stack} />
+        <Beats beats={project.beats} />
+        <div className="sum" data-sum>
+          <div className="sum-head">
+            <div className="sum-logo" data-logo-space />
+            <DetailsButton id={kind} />
+            <Chip url={project.url} domain={project.domain} />
+            <Replay />
+          </div>
+          <p className="sum-tagline">{project.tagline}</p>
+          <p className="meta sum-meta">
+            {project.dates} · {project.stack}
+          </p>
+          <Points beats={project.beats} />
+          <div className="more">
+            <DetailBlocks detail={project.detail} kind="Project" name={project.label} />
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -104,6 +137,23 @@ export default function Page() {
       <section id="top" className="hero">
         <div className="hero-slot" data-slot="hero" data-cursor="Drag">
           <Image src="/img/me.webp" alt="Portrait of Moïse Kenge" fill sizes="40vw" className="object-cover" priority />
+        </div>
+        <div className="hero-pick">
+          <button type="button" className="hero-arrow" data-pick-step="-1" aria-label="Previous section">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M17 10H3M8.5 4.5 3 10l5.5 5.5" />
+            </svg>
+          </button>
+          <button type="button" className="hero-pick-go" data-pick-go data-cursor="Open">
+            <span data-pick-name aria-live="polite">
+              Spin to pick a section
+            </span>
+          </button>
+          <button type="button" className="hero-arrow" data-pick-step="1" aria-label="Next section">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3 10h14M11.5 4.5 17 10l-5.5 5.5" />
+            </svg>
+          </button>
         </div>
         <div className="wrap">
           <p className="hero-sentence">{profile.sentence}</p>
@@ -127,19 +177,29 @@ export default function Page() {
             {experience.map((job) => (
               <li
                 key={job.company}
+                id={job.short.toLowerCase()}
                 className="xp-item"
+                data-chapter={job.short}
                 style={{ "--ink": job.ink, "--acc": job.fxColor, "--acc-ink": job.fxInk, "--face": job.face } as Vars}
               >
                 <Image src={job.logo} alt={`${job.company} logo`} width={320} height={120} className="xp-logo" unoptimized />
-                <div className="xp-title">
-                  <h2 data-title>{job.company}</h2>
-                  <p data-title>{job.role}</p>
-                  <p className="meta" data-title>
-                    {job.dates} · {job.place}
+                <div className="sum" data-sum>
+                  <div className="sum-head">
+                    <h2>{job.company}</h2>
+                    <DetailsButton id={detailId(job.short)} />
+                    <Chip url={job.url} domain={job.domain} />
+                    <Replay />
+                  </div>
+                  <p className="meta sum-meta">
+                    {job.role} · {job.dates} · {job.place}
                   </p>
+                  <Points beats={job.beats} />
+                  <div className="more">
+                    <DetailBlocks detail={job.detail} kind="Experience" name={job.company} />
+                  </div>
                 </div>
-                <Beats beats={job.beats} url={job.url} domain={job.domain} note="Or keep scrolling" />
-                {job.app ? <AppStory steps={job.app} /> : null}
+                <Beats beats={job.beats} />
+                {job.app ? <AppStory steps={job.app} details={detailId(job.short)} /> : null}
               </li>
             ))}
           </ol>
@@ -163,21 +223,27 @@ export default function Page() {
             {education}
           </p>
         </div>
-        <div className="skills" aria-label="Skills">
-          {skillRows.map((row, index) => (
-            <div className="skill-row" data-marquee={index % 2 ? "right" : "left"} key={row[0]}>
-              <ul>
-                {row.map((skill) => (
-                  <li key={skill}>{skill}</li>
-                ))}
-              </ul>
-              <ul aria-hidden="true" className="skill-copy">
-                {row.map((skill) => (
-                  <li key={skill}>{skill}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div className="wrap stack">
+          <h2 className="meta stack-label" data-reveal="up">
+            Stack
+          </h2>
+          <div className="stack-grid">
+            {stack.map((group, index) => (
+              <section key={group.title} data-reveal="up" data-reveal-delay={index * 0.08}>
+                <h3>{group.title}</h3>
+                <ul>
+                  {group.items.map((item) => (
+                    <li key={item.name}>
+                      <span className="stack-icon">
+                        <Icon name={item.icon} />
+                      </span>
+                      {item.name}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -199,9 +265,17 @@ export default function Page() {
               </a>
             </div>
           </div>
-          <p className="meta mt-16">
-            {profile.location} · {new Date().getFullYear()}
-          </p>
+          <div className="closing" data-reveal="up">
+            <button type="button" className="link-line" data-watch-again data-cursor="Play">
+              Watch again ↺
+            </button>
+            <a href="#top" className="link-line" data-cursor="Top">
+              Back to top ↑
+            </a>
+            <p className="meta">
+              {profile.location} · {new Date().getFullYear()}
+            </p>
+          </div>
         </div>
       </section>
     </main>

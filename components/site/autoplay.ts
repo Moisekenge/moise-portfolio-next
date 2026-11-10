@@ -10,15 +10,18 @@ const DESCRIPTION: Record<State, string> = {
   paused: "Resume automatic scroll",
   ended: "Replay from the top",
 };
-const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " ", "Escape"]);
+const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End", " ", "Escape"]);
 const NEAR_TOP = 40;
 const LONGEST_STEP_MS = 100;
 
+/** A scroll position where autoplay waits, so the chapter there can play to its end. */
+export type AutoStop = { y: number; hold: () => number };
+
 /**
- * Moves the page on its own while "playing". Every animation already follows the
- * scroll position, so nothing else needs to know. Any manual input takes over at once.
+ * Moves the page on its own while "playing". Chapters play on arrival, so autoplay
+ * travels to each stop and waits there. Any manual input takes over at once.
  */
-export function bindAutoplay(lenis: Lenis, speed: () => number) {
+export function bindAutoplay(lenis: Lenis, speed: () => number, stops: () => AutoStop[]) {
   const root = document.querySelector<HTMLElement>(".autoplay");
   const button = root?.querySelector("button");
   const label = root?.querySelector(".autoplay-label");
@@ -26,6 +29,8 @@ export function bindAutoplay(lenis: Lenis, speed: () => number) {
 
   let state: State = "idle";
   let position = 0;
+  /** Seconds left to wait at the current stop. */
+  let wait = 0;
 
   const atEnd = () => lenis.scroll >= lenis.limit - 2;
 
@@ -46,7 +51,17 @@ export function bindAutoplay(lenis: Lenis, speed: () => number) {
   const tick = (_time: number, deltaMs: number) => {
     if (state !== "playing") return;
     // The step is capped, so returning to a hidden tab never jumps the page.
-    position = Math.min(lenis.limit, position + (speed() * Math.min(deltaMs, LONGEST_STEP_MS)) / 1000);
+    const seconds = Math.min(deltaMs, LONGEST_STEP_MS) / 1000;
+    if (wait > 0) {
+      wait -= seconds;
+      return;
+    }
+    const next = stops().find((stop) => stop.y > position + 1);
+    position = Math.min(lenis.limit, position + speed() * seconds);
+    if (next && position >= next.y) {
+      position = next.y;
+      wait = next.hold();
+    }
     lenis.scrollTo(position, { immediate: true, force: true });
     if (position >= lenis.limit) setState("ended");
   };
@@ -63,10 +78,11 @@ export function bindAutoplay(lenis: Lenis, speed: () => number) {
     if (state === "playing") return setState("paused");
     if (atEnd()) lenis.scrollTo(0, { immediate: true, force: true });
     position = lenis.scroll;
+    wait = 0;
     setState("playing");
   };
 
-  const fromControl = (event: Event) => root.contains(event.target as Node);
+  const fromControl = (event: Event) => event.target instanceof Node && root.contains(event.target);
   const onTouch = (event: Event) => {
     if (!fromControl(event)) pause();
   };
@@ -78,7 +94,7 @@ export function bindAutoplay(lenis: Lenis, speed: () => number) {
     if (event.clientX >= document.documentElement.clientWidth) pause();
   };
   const onClick = (event: MouseEvent) => {
-    if ((event.target as HTMLElement).closest("a, [data-rail]")) pause();
+    if (event.target instanceof Element && event.target.closest("a, [data-rail], [data-tick], [data-app-dot], [data-replay], [data-details-open]")) pause();
   };
 
   button.addEventListener("click", onPress);

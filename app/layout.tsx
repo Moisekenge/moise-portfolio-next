@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Sheet } from "@/components/site/details";
 import { Director } from "@/components/site/director";
 import { Header } from "@/components/site/header";
 import "./globals.css";
@@ -41,6 +42,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </div>
         <canvas className="stage-canvas" aria-hidden="true" />
         <div className="progress" aria-hidden="true" />
+        <div className="ticks" aria-hidden="true" />
+        <div className="chapter" aria-hidden="true">
+          <span data-chapter-count />
+          <span data-chapter-name />
+        </div>
+        <div className="curtain" aria-hidden="true" />
+        <Sheet />
         <div className="cursor" aria-hidden="true">
           <span />
         </div>
